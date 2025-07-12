@@ -31,7 +31,7 @@ I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, et
 6. Mix ingredients
 7. Observe changes 
 8. Record changes (Data Collection Agent: Voice to Text)
-9. Determine, based on changes, whether to continue with experiment (potential AI?)
+9. Determine, based on changes, whether to continue with experiment (OPTIONAL: Experiment Projection Agent -- Visualization / Computation)
 10. Extract black particles
 11. Mix with solvent
 12. Observe changes 
@@ -41,9 +41,9 @@ I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, et
 16. Record parameters (Data Collection Agent: Voice to Text)
 17. Set up video feed to monitor experiment
 18. Go home bc the oil bath will take 16 hours
-19. Monitor video feed (AI)
+19. Monitor video feed (AI TBD WHAT THIS LOOKS LIKE)
 20. Record data from video feed -- qualitative changes (Data Collection Agent? TBD)
-21. In the event of a safety issue, alert scientist (AI)
+21. In the event of a safety issue, alert scientist (Safety Monitoring Agent)
 22. In the event of a safety issue, turn off lab instruments (Lab Instrument Control Agent)
 
 ## Agents 
