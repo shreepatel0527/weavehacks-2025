@@ -25,24 +25,24 @@ I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, et
 ## List of Tasks
 1. Grab reagents (gold, sulfur, solvents)
 2. Weigh reagents (gold, sulfur)
-3. Record volume (solvents) (AI)
-4. Record mass (AI)
+3. Record volume (solvents) (Data Collection Agent: Voice to Text)
+4. Record mass (Data Collection Agent: Voice to Text)
 5. Move to fume hood 
 6. Mix ingredients
 7. Observe changes 
-8. Record changes (AI)
+8. Record changes (Data Collection Agent: Voice to Text)
 9. Determine, based on changes, whether to continue with experiment (potential AI?)
 10. Extract black particles
 11. Mix with solvent
 12. Observe changes 
-13. Record changes (AI)
+13. Record changes (Data Collection Agent: Voice to Text)
 14. Pre-heat oil bath (AI)
 15. Move to oil bath
-16. Record parameters (AI)
+16. Record parameters (Data Collection Agent: Voice to Text)
 17. Set up video feed to monitor experiment
 18. Go home bc the oil bath will take 16 hours
 19. Monitor video feed (AI)
-20. Record data from video feed -- qualitative changes (AI)
+20. Record data from video feed -- qualitative changes (Data Collection Agent? TBD)
 21. In the event of a safety issue, alert scientist (AI)
 22. In the event of a safety issue, turn off lab instruments (AI)
 
