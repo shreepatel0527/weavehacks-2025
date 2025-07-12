@@ -40,7 +40,9 @@ Solution: Being able to automate turning an instrument on or off by voice or wit
 
 ### Safety Monitoring Agent
 
-Problem Statement:
+Problem Statement: When experiments run for a long amount of time, scientists leave the lab and let the experiments go on their own. If they become dangerous, they become a safety concern. 
+
+Solution: Notify the scientist. If we cannot reach the scientist, shut down the system. 
 
 ### Data Visualization Agent
 
