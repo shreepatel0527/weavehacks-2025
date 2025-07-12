@@ -1,0 +1,33 @@
+{
+  "os":  "macOS-15.2-arm64-arm-64bit",
+  "python":  "CPython 3.9.13",
+  "startedAt":  "2025-07-12T22:21:47.461358Z",
+  "program":  "app.py",
+  "codePath":  "app.py",
+  "codePathLocal":  "app.py",
+  "email":  "rohit98.kumar@gmail.com",
+  "root":  "/Users/rohitkumar/Documents/hackathon",
+  "host":  "Rohits-MacBook-Pro.local",
+  "executable":  "/Users/rohitkumar/.pyenv/versions/3.9.13/bin/python3.9",
+  "cpu_count":  8,
+  "cpu_count_logical":  8,
+  "disk":  {
+    "/":  {
+      "total":  "494384795648",
+      "used":  "166339018752"
+    }
+  },
+  "memory":  {
+    "total":  "8589934592"
+  },
+  "apple":  {
+    "name":  "Apple M3",
+    "ecpuCores":  4,
+    "pcpuCores":  4,
+    "gpuCores":  10,
+    "memoryGb":  8,
+    "swapTotalBytes":  "7516192768",
+    "ramTotalBytes":  "8589934592"
+  },
+  "writerId":  "idmlq2tn34r9cjezq9wy22gq8qqhzxmo"
+}
