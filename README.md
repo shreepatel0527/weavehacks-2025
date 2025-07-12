@@ -59,7 +59,7 @@ I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, et
 
 ## Agents 
 
-### Data Collection Agent
+### Data Collection Agent (Rohit)
 
 Problem Statement: Lab scientists spend a majority of their time working with their hands. When occupied by other tasks, it becomes difficult to record data in a timely manner. If recording data after an experiment ends, a scientist runs the risk of forgetting their observations or not recording them in their entirety. Not to mention, leaving the experiment to record data involves taking off layers of PPE and could introduce safety hazards if experiments are not monitored adequately in that time. 
 
@@ -88,7 +88,7 @@ Problem Statement: My hands are often tied with the pipettes, etc. that I am hol
 
 Solution: Being able to automate turning an instrument on or off by voice or with another agent 
 
-### Safety Monitoring Agent
+### Safety Monitoring Agent (Andy)
 
 Problem Statement: When experiments run for a long amount of time, scientists leave the lab and let the experiments go on their own. If they become dangerous, they become a safety concern. 
 
@@ -96,7 +96,20 @@ Solution: Notify the scientist. If we cannot reach the scientist, shut down the 
 
 Features: monitor (random) input stream of four parameters: temperature, pressure, nitrogen level, butane level
 
-### Data Visualization Agent
+Prompt: We are building a suite that supports wet lab scientists in their day to day work by automationg data collection, calculation, and safety monitoring tasks. You are an AI agent that specializes in monitoring instrument I/O streams tracking experiment parameters like temperature, pressure, gas concentration, etcl. You are responsible for determining if the experiment is at risk of causing an incident. You are given a protocol as input
+
+Based on the protocol, determine what suitable ranges are for the temperature and pressure of the instrument. 
+
+If the I/O stream for a parameter indicates that the instrument is nearing a safety concern for at least 1 minute, contact the scientist. 
+
+If the scientist does not reply in three minutes, and the parameter has returned to non-concerning levels, record a warning, but do not take further action. 
+
+If the scientist does not reply in three minutes, and the parameter has stayed at the same level, or increased in potential safety severity, shut off the instrument. 
+
+Input:
+Protocol: {protocol}
+
+### Data Visualization Agent / Computation Agent (Michael)
 
 
 # weavehacks-2025
