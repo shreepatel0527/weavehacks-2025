@@ -31,3 +31,24 @@ Solution: Our solution enables scientists to automate data collection through vo
 Build: (include the tools we used, approach, etc.)
 
 ### Data Visualization Agent
+
+
+# weavehacks-2025
+The public repo for WeaveHacks 2025, focused on agentic workflows for research scientists
+
+
+
+Once Shree picks a use case / API, I will define the API call(s) for you to make:
+https://benchling.com/api/reference
+https://docs.latch.bio/api/latch.html
+https://www.uncountable.com/cloud-platform
+https://www.scinote.net/product/integrations-and-api
+https://www.collaborativedrug.com/cdd-blog/vault-snack-17-all-things-api
+https://www.dropbox.com/scl/fi/vb2qgs8o2bu6d3lzp63mg/ELN-analytics-template.xlsx
+
+
+High level AI scientist and computational biology notes:
+https://www.futurehouse.org/about
+https://www.linkedin.com/posts/james-zou-2123a4133_agents4science-activity-7349456876696199170-BSKR
+https://agents4science.stanford.edu
+
