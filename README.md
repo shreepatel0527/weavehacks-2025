@@ -20,6 +20,8 @@ I place this into an oil bath, which I need the temperature, compounds, and pres
 
 When I perform an experiment, I want to be able to scan my parameters effectively, record one experiment on one page, and have the agent record both my numbers and my qualitative results. I want to be able to visualize my parameters (volume, heat, etc.) and compare how these parameters relate to my UV-Vis peak (extracted from a chromatogram, determines whether or not I was successful in making my nanoparticle, or how close I am to the right structure)
 
+I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, etc.)-- let the agent figure it out, inventory management (notie I'm running out of chemical, tell agent to find it and order it for me)
+
 ## Agents 
 
 ### Data Collection Agent
