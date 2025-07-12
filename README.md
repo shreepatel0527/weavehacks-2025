@@ -22,6 +22,30 @@ When I perform an experiment, I want to be able to scan my parameters effectivel
 
 I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, etc.)-- let the agent figure it out -- also implement safety checks and controls on those instruments for shut off, inventory management (notie I'm running out of chemical, tell agent to find it and order it for me), agentic video feed monitoring to automate data collection for overinght experiments, agent communicates to scientist
 
+## List of Tasks
+1. Grab reagents (gold, sulfur, solvents)
+2. Weigh reagents (gold, sulfur)
+3. Record volume (solvents) (AI)
+4. Record mass (AI)
+5. Move to fume hood 
+6. Mix ingredients
+7. Observe changes 
+8. Record changes (AI)
+9. Determine, based on changes, whether to continue with experiment (potential AI?)
+10. Extract black particles
+11. Mix with solvent
+12. Observe changes 
+13. Record changes (AI)
+14. Pre-heat oil bath (AI)
+15. Move to oil bath
+16. Record parameters (AI)
+17. Set up video feed to monitor experiment
+18. Go home bc the oil bath will take 16 hours
+19. Monitor video feed (AI)
+20. Record data from video feed -- qualitative changes (AI)
+21. In the event of a safety issue, alert scientist (AI)
+22. In the event of a safety issue, turn off lab instruments (AI)
+
 ## Agents 
 
 ### Data Collection Agent
