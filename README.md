@@ -10,13 +10,7 @@ Nanoparticles are a hot topic right now; we are exploring applications in energy
 
 This involves up to 16 hours of experiments, the first 3 of which I have to do by hand. All of my work occurs in the fume hood, and I have to wear special gloves and wrist covers to conduct my work because of the nature of the chemicals I am working with. 
 
-I need to record the mass of my gold compound (I’ll find a name for this I forget), the mass of my sulfur compound (also will find name), and the volume of my solvent (dichloromethane) to do my computations later. 
-
-When I mix together my ingredients, I am looking for the formation of black particles at the bottom of my orange solution. I am concerned with how long it takes for these particles to form (currently, I am manually timing the process with a timer). I am also on the lookout for steam formation (heat, could be a concern)
-
-I extract the black particles from the solution and mix them into a different solvent, which I need to record the volume of. I also am on the lookout for qualitative changes. 
-
-I place this into an oil bath, which I need the temperature, compounds, and pressure of. 
+Thus, my hands are tied and it is a huge disruption when I need to perform calculations, turn on and off instruments, and monitor for safety conditions. I need to record the mass of my gold compound (I’ll find a name for this I forget), the mass of my sulfur compound (also will find name), and the volume of my solvent (dichloromethane) to do my computations later. 
 
 When I perform an experiment, I want to be able to scan my parameters effectively, record one experiment on one page, and have the agent record both my numbers and my qualitative results. I want to be able to visualize my parameters (volume, heat, etc.) and compare how these parameters relate to my UV-Vis peak (extracted from a chromatogram, determines whether or not I was successful in making my nanoparticle, or how close I am to the right structure)
 
