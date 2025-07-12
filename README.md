@@ -46,6 +46,17 @@ I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, et
 21. In the event of a safety issue, alert scientist (Safety Monitoring Agent)
 22. In the event of a safety issue, turn off lab instruments (Lab Instrument Control Agent)
 
+| **Category / Prize**                       | **Relevant Tasks**                                                            | **Suggested Tools / APIs**                                         | **Why It Helps**                                                                                   |
+| ------------------------------------------ | ----------------------------------------------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| 🧠 **Agent Protocols (MCP, A2A)**          | All agent transitions (grab reagents → weigh → record → move → observe, etc.) | MCP, A2A                                                           | Required for eligibility. Use to show explicit agent handoffs and action chains.                   |
+| 🟠 **Best Use of Weave**                   | All **Data Collection Agents**, **Safety Agent**, **Video Monitor Agent**     | `@trace`, `weave.init()`, media logging (audio, video, params)     | Enables observability, rich logs, and debugging. Show full trace of agent workflows.               |
+| ☁️ **Best Use of Google Tools**            | Vision agent, projection agent, orchestration logic                           | A2A, ADK, Vertex AI (e.g. Gemini 1.5 Pro for multimodal reasoning) | Showcase stateful agents and deploy on Google infra. Use Gemini for image/text interpretation.     |
+| 🤖 **Best Use of CrewAI**                  | Data Collection Agent, Lab Control Agent, Safety Agent, Projection Agent      | CrewAI (agent roles + task orchestration)                          | Define clear agent personas and schedule task handoffs with dependencies.                          |
+| 🌐 **Best Use of BrowserBase / Stagehand** | Remote lab control, data scraping, reagent lookup                             | Stagehand (code gen), BrowserBase (automation platform)            | Show real-world automation of browser interfaces (e.g., ELNs or reagent supplier sites).           |
+| 🚀 **Best Use of Fly.io**                  | Long-running agents (e.g., video monitor), modular agent deployment           | Fly.io container deployment, scale-to-zero microservices           | Host distributed agents; separate background jobs like monitoring from active control agents.      |
+| 🧠 **Best Use of Exa**                     | Experiment Projection Agent: "should I continue?" based on observed changes   | Exa Search API (for protocols, research papers, observed outcomes) | Let agent search research context and reason about next steps using real-world synthesis examples. |
+
+
 ## Agents 
 
 ### Data Collection Agent
