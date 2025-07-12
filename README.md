@@ -1,2 +1,33 @@
 # weavehacks-2025
 The public repo for WeaveHacks 2025, focused on agentic workflows for research scientists
+
+## Vision 
+
+Scientists are tackling some of the world’s most pressing problems; however, their industry remains highly manual, slowing down these brilliant minds in achieving the breakthroughs we need. We are introducing agentic workflows to the research space, with a focus on wet lab scientists, to reduce the burden on these brilliant minds.
+
+## Use Case
+Nanoparticles are a hot topic right now; we are exploring applications in energy, cosmetics, robotic technologies, and cancer treatments. Nanoparticles are unique because they allow us a gateway to understand the connection between classical and quantum states of being. As a nanoparticle researcher, I am working on building a nanoparticle that I believe will be a great carrier for targeted cancer therapy. 
+
+This involves up to 16 hours of experiments, the first 3 of which I have to do by hand. All of my work occurs in the fume hood, and I have to wear special gloves and wrist covers to conduct my work because of the nature of the chemicals I am working with. 
+
+I need to record the mass of my gold compound (I’ll find a name for this I forget), the mass of my sulfur compound (also will find name), and the volume of my solvent (dichloromethane) to do my computations later. 
+
+When I mix together my ingredients, I am looking for the formation of black particles at the bottom of my orange solution. I am concerned with how long it takes for these particles to form (currently, I am manually timing the process with a timer). I am also on the lookout for steam formation (heat, could be a concern)
+
+I extract the black particles from the solution and mix them into a different solvent, which I need to record the volume of. I also am on the lookout for qualitative changes. 
+
+I place this into an oil bath, which I need the temperature, compounds, and pressure of. 
+
+When I perform an experiment, I want to be able to scan my parameters effectively, record one experiment on one page, and have the agent record both my numbers and my qualitative results. I want to be able to visualize my parameters (volume, heat, etc.) and compare how these parameters relate to my UV-Vis peak (extracted from a chromatogram, determines whether or not I was successful in making my nanoparticle, or how close I am to the right structure)
+
+## Agents 
+
+### Data Collection Agent
+
+Problem Statement: Lab scientists spend a majority of their time working with their hands. When occupied by other tasks, it becomes difficult to record data in a timely manner. If recording data after an experiment ends, a scientist runs the risk of forgetting their observations or not recording them in their entirety. Not to mention, leaving the experiment to record data involves taking off layers of PPE and could introduce safety hazards if experiments are not monitored adequately in that time. 
+
+Solution: Our solution enables scientists to automate data collection through voice into their electronic lab notebook, ensuring that they are able to focus on their experiments.
+
+Build: (include the tools we used, approach, etc.)
+
+### Data Visualization Agent
