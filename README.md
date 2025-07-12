@@ -17,6 +17,21 @@ When I perform an experiment, I want to be able to scan my parameters effectivel
 I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, etc.)-- let the agent figure it out -- also implement safety checks and controls on those instruments for shut off, inventory management (notie I'm running out of chemical, tell agent to find it and order it for me), agentic video feed monitoring to automate data collection for overinght experiments, agent communicates to scientist
 
 ## List of Tasks
+1. Dissolve 0.1576 g HAuCl₄·3H₂O in 5 mL Nanopure water.
+2. Dissolve \~0.25 g TOAB in 10 mL toluene.
+3. Combine both in a 25 mL tri-neck round-bottom flask.
+4. Stir vigorously (\~1100 rpm) for \~15 min.
+5. Remove the aqueous layer with a 10 mL syringe.
+6. Purge with N₂ and cool to 0°C in ice bath over 30 min with stirring.
+7. Add 3 eq. PhCH₂CH₂SH (relative to gold).
+8. Stir slowly; observe color change: deep red → faint yellow (\~5 min) → clear (\~1 hr).
+9. Increase stir speed and add 10 eq. NaBH₄ in 7 mL ice-cold Nanopure water.
+10. Stir overnight under N₂ atmosphere.
+11. Remove aqueous layer next day with syringe.
+12. Dry toluene layer.
+13. Add 20 mL ethanol to separate Au₂₅ clusters.
+14. Remove supernatant and collect Au₂₅ clusters.
+
 1. Grab reagents (gold, sulfur, solvents)
 2. Weigh reagents (gold, sulfur)
 3. Record volume (solvents) (Data Collection Agent: Voice to Text)
