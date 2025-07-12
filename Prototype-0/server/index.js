@@ -9,6 +9,7 @@ const ingestRoutes = require('./routes/ingest');
 const visualizationRoutes = require('./routes/visualization');
 const { router: safetyRoutes, safetyService } = require('./routes/safety');
 const { router: dataCollectionRoutes, dataAgent } = require('./routes/data_collection');
+const { router: sensorDataRoutes, sensorDataService } = require('./routes/sensor_data');
 const WebSocketHandler = require('./websocket');
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api/ingest', ingestRoutes);
 app.use('/api/visualizations', visualizationRoutes);
 app.use('/api/safety', safetyRoutes);
 app.use('/api/data-collection', dataCollectionRoutes);
+app.use('/api/sensor-data', sensorDataRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
