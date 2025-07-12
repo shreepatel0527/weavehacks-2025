@@ -32,6 +32,16 @@ Solution: Our solution enables scientists to automate data collection through vo
 
 Build: (include the tools we used, approach, etc.)
 
+### Lab Instrument Control Agent
+
+Problem Statement: My hands are often tied with the pipettes, etc. that I am holding. 
+
+Solution: Being able to automate turning an instrument on or off by voice or with another agent 
+
+### Safety Monitoring Agent
+
+Problem Statement:
+
 ### Data Visualization Agent
 
 
