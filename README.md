@@ -47,6 +47,7 @@ https://www.uncountable.com/cloud-platform
 https://www.scinote.net/product/integrations-and-api
 https://www.collaborativedrug.com/cdd-blog/vault-snack-17-all-things-api
 https://www.dropbox.com/scl/fi/vb2qgs8o2bu6d3lzp63mg/ELN-analytics-template.xlsx
+https://scinote-eln.github.io/scinote-api-docs/#introduction
 
 
 High level AI scientist and computational biology notes:
