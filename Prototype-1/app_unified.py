@@ -33,6 +33,12 @@ def initialize_session_state():
         st.session_state.ai_model = "Claude"
     if 'audio_method' not in st.session_state:
         st.session_state.audio_method = "System Microphone"
+    
+    # Test connections only once at startup
+    if 'claude_status' not in st.session_state:
+        st.session_state.claude_status = st.session_state.claude.test_connection()
+    if 'gemini_status' not in st.session_state:
+        st.session_state.gemini_status = st.session_state.gemini.test_connection()
 
 
 def display_chat_history():
@@ -84,8 +90,7 @@ def process_user_input(prompt: str):
     else:
         st.error(response)
     
-    # Force a rerun to display the new messages
-    st.rerun()
+    # No need to force rerun - Streamlit will handle the update
 
 
 def transcribe_browser_audio(audio_bytes):
@@ -156,13 +161,13 @@ def main():
             help="System Microphone: Direct recording\nBrowser Recording: Uses browser's audio input"
         )
     
-    # Test selected AI connection
+    # Check selected AI connection status (from cached values)
     if st.session_state.ai_model == "Claude":
-        if not st.session_state.claude.test_connection():
+        if not st.session_state.claude_status:
             st.error("⚠️ Claude CLI not found. Please ensure 'claude -p' is available on your system.")
             st.stop()
     elif st.session_state.ai_model == "Google Gemini 2.5 Pro":
-        if not st.session_state.gemini.test_connection():
+        if not st.session_state.gemini_status:
             st.error("⚠️ Gemini API not configured. Please ensure API key exists at $HOME/Documents/Ephemeral/gapi")
             st.stop()
     
@@ -230,7 +235,6 @@ def main():
             with col2:
                 if st.button("🎤", help="Click to record speech", use_container_width=True):
                     st.session_state.audio_input_active = True
-                    st.rerun()
             
             with col1:
                 prompt = st.chat_input("Type your message here...")
@@ -245,7 +249,6 @@ def main():
         
         if st.button("Clear Chat History"):
             st.session_state.messages = []
-            st.rerun()
         
         st.divider()
         
@@ -272,12 +275,12 @@ def main():
         
         st.subheader("Connection Status")
         
-        # Claude status
-        claude_status = "✅ Connected" if st.session_state.claude.test_connection() else "❌ Not Available"
+        # Claude status (from cached value)
+        claude_status = "✅ Connected" if st.session_state.claude_status else "❌ Not Available"
         st.caption(f"Claude CLI: {claude_status}")
         
-        # Gemini status
-        gemini_status = "✅ Connected" if st.session_state.gemini.test_connection() else "❌ Not Available"
+        # Gemini status (from cached value)
+        gemini_status = "✅ Connected" if st.session_state.gemini_status else "❌ Not Available"
         st.caption(f"Gemini API: {gemini_status}")
         
         st.divider()

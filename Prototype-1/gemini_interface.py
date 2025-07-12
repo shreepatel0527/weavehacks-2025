@@ -3,6 +3,7 @@ import sys
 from typing import Optional, Tuple
 from pathlib import Path
 import logging
+import time
 
 # Set up stderr logging for verbose AI interactions
 logging.basicConfig(
@@ -90,12 +91,15 @@ class GeminiInterface:
             logger.info(f"Message: {message}")
             logger.info("=" * 60)
             
-            # Send the message to Gemini
+            # Send the message to Gemini with timing
+            start_time = time.time()
             response = self.model.generate_content(message)
+            end_time = time.time()
             response_text = response.text
             
-            # Log the response to stderr
+            # Log the response to stderr with timing info
             logger.info("GEMINI RESPONSE:")
+            logger.info(f"Response time: {end_time - start_time:.2f} seconds")
             logger.info(response_text)
             logger.info("=" * 60)
             
