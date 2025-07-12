@@ -1,7 +1,7 @@
 import requests
 import csv
 
-def search_google_scholar(query="nanoparticle", api_key="apikey", num_results=10):
+def search_google_scholar(query="nanoparticle", api_key=gs, num_results=10):
     url = "https://serpapi.com/search"
     params = {
         "engine": "google_scholar",
