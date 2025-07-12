@@ -29,19 +29,20 @@ I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, et
 10. Plce on stir plate with stir bar
 11. Stir vigorously (\~1100 rpm) for \~15 min. -- qual obv at the end of 15 min
 12. Remove the aqueous layer with a 10 mL syringe.
-13. Purge with N₂
-14. Cool to 0°C in ice bath over 30 min with stirring.
-15. Grab PhCH₂CH₂SH 
-16. Add 3 eq. PhCH₂CH₂SH (relative to gold). -- calc, record mass
-17. Stir slowly; observe color change: deep red → faint yellow (\~5 min) → clear (\~1 hr). -- qual obs
-18. Grab NaBH₄
-19. Increase stir speed
-20. Add 10 eq. NaBH₄ in 7 mL ice-cold Nanopure water. - qual obs
-21. Stir overnight under N₂ atmosphere.
-22. Remove aqueous layer next day with syringe. -- qual obs
-23. Dry toluene layer.
-24. Add 20 mL ethanol to separate Au₂₅ clusters. -- record vol
-25. Remove supernatant and collect Au₂₅ clusters.
+13. Place gasket and gas needle on round-bottom flask
+14. Purge with N₂
+15. Cool to 0°C in ice bath over 30 min with stirring.
+16. Grab PhCH₂CH₂SH 
+17. Add 3 eq. PhCH₂CH₂SH (relative to gold). -- calc, record mass
+18. Stir slowly; observe color change: deep red → faint yellow (\~5 min) → clear (\~1 hr). -- qual obs
+19. Grab NaBH₄
+20. Increase stir speed
+21. Add 10 eq. NaBH₄ in 7 mL ice-cold Nanopure water. - qual obs
+22. Stir overnight under N₂ atmosphere.
+23. Remove aqueous layer next day with syringe. -- qual obs
+24. Dry toluene layer.
+25. Add 20 mL ethanol to separate Au₂₅ clusters. -- record vol
+26. Remove supernatant and collect Au₂₅ clusters.
 
 ### DEP List of Steps
 1. Grab reagents (gold, sulfur, solvents)
