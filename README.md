@@ -79,6 +79,8 @@ Problem Statement: When experiments run for a long amount of time, scientists le
 
 Solution: Notify the scientist. If we cannot reach the scientist, shut down the system. 
 
+Features: monitor (random) input stream of four parameters: temperature, pressure, nitrogen level, butane level
+
 ### Data Visualization Agent
 
 
