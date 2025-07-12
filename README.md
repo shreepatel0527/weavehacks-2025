@@ -36,7 +36,7 @@ I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, et
 11. Mix with solvent
 12. Observe changes 
 13. Record changes (Data Collection Agent: Voice to Text)
-14. Pre-heat oil bath (AI)
+14. Pre-heat oil bath (Lab Instrument Control Agent)
 15. Move to oil bath
 16. Record parameters (Data Collection Agent: Voice to Text)
 17. Set up video feed to monitor experiment
@@ -44,7 +44,7 @@ I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, et
 19. Monitor video feed (AI)
 20. Record data from video feed -- qualitative changes (Data Collection Agent? TBD)
 21. In the event of a safety issue, alert scientist (AI)
-22. In the event of a safety issue, turn off lab instruments (AI)
+22. In the event of a safety issue, turn off lab instruments (Lab Instrument Control Agent)
 
 ## Agents 
 
