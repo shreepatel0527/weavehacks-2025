@@ -1,0 +1,14 @@
+[
+  {"month": "January", "revenue": 45000, "orders": 320, "region": "North"},
+  {"month": "February", "revenue": 52000, "orders": 380, "region": "North"},
+  {"month": "March", "revenue": 48000, "orders": 350, "region": "North"},
+  {"month": "April", "revenue": 61000, "orders": 420, "region": "North"},
+  {"month": "May", "revenue": 58000, "orders": 400, "region": "North"},
+  {"month": "June", "revenue": 67000, "orders": 450, "region": "North"},
+  {"month": "January", "revenue": 38000, "orders": 280, "region": "South"},
+  {"month": "February", "revenue": 41000, "orders": 300, "region": "South"},
+  {"month": "March", "revenue": 43000, "orders": 310, "region": "South"},
+  {"month": "April", "revenue": 47000, "orders": 340, "region": "South"},
+  {"month": "May", "revenue": 51000, "orders": 360, "region": "South"},
+  {"month": "June", "revenue": 55000, "orders": 390, "region": "South"}
+]
