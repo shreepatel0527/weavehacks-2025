@@ -35,14 +35,15 @@ def listen(previous_method):
 # Use compatibility class instead of Flow
 Flow = FlowCompatibility
 import weave
-from agents.data_collection_agent import DataCollectionAgent
-from agents.lab_control_agent import LabControlAgent
-from agents.safety_monitoring_agent import EnhancedSafetyMonitoringAgent
-from agents.voice_recognition_agent import SpeechRecognizerAgent
+from .agents.data_collection_agent import DataCollectionAgent
+from .agents.lab_control_agent import LabControlAgent
+from .agents.safety_monitoring_agent import EnhancedSafetyMonitoringAgent as SafetyMonitoringAgent
+from .agents.voice_recognition_agent import SpeechRecognizerAgent
+from .agents.video_monitoring_agent import VideoMonitoringAgent
 # from .crews.data_collection_crew.data_collection_crew import DataCollectionCrew
 # from .crews.lab_control_crew.lab_control_crew import LabControlCrew
 # from .crews.safety_monitoring_crew.safety_monitoring_crew import SafetyMonitoringCrew
-from utils.chemistry_calculations import (
+from .utils.chemistry_calculations import (
     calculate_sulfur_amount,
     calculate_nabh4_amount,
     calculate_percent_yield
@@ -80,7 +81,9 @@ class ExperimentFlow(FlowCompatibility):
         super().__init__(ExperimentState)
         self.data_agent = DataCollectionAgent()
         self.lab_agent = LabControlAgent()
-        self.safety_agent = EnhancedSafetyMonitoringAgent()
+        self.safety_agent = SafetyMonitoringAgent()
+        self.video_agent = VideoMonitoringAgent()
+        self.voice_agent = SpeechRecognizerAgent(model_size="base")
         self._setup_workflow()
     
     def _setup_workflow(self):
@@ -110,10 +113,25 @@ class ExperimentFlow(FlowCompatibility):
     def initialize_experiment(self):
         print("Initializing experiment...")
         
+        # Start video monitoring if camera is available
+        if self.video_agent.test_camera():
+            print("Starting video monitoring...")
+            self.video_agent.start_monitoring(callback=self._handle_video_event)
+            print("Video monitoring active")
+        else:
+            print("Camera not available - proceeding without video monitoring")
+
     @weave.op()
     def update_step(self):
         self.state.step_num += 1
         print(f"Step {self.state.step_num} completed.")
+    
+    def _handle_video_event(self, event):
+        """Handle video monitoring events"""
+        if event['type'] == 'motion':
+            print(f"Motion detected at {event['timestamp']}")
+        elif event['type'] == 'color_change':
+            print(f"Color change detected: {event.get('difference', 'N/A')}")
     
     # need to add a step prompting method 
 
@@ -446,8 +464,9 @@ class ExperimentFlow(FlowCompatibility):
                 self.monitoring_thread.join(timeout=2.0)
         
         # Stop video monitoring and recording
-        stop_result = self.video_agent.stop_monitoring()
-        print(f"Video monitoring stopped: {stop_result['message']}")
+        if hasattr(self.video_agent, 'is_monitoring') and self.video_agent.is_monitoring:
+            stop_result = self.video_agent.stop_monitoring()
+            print(f"Video monitoring stopped: {stop_result['message']}")
         
         # Get video monitoring summary
         video_summary = self.video_agent.get_event_summary()
@@ -480,7 +499,23 @@ class ExperimentFlow(FlowCompatibility):
     @listen(measure_solvent)
     '''
 
-    
+    @weave.op()
+    def control_lab_instruments(self):
+        self.lab_agent.turn_on("centrifuge")
+        self.lab_agent.turn_on("UV-Vis")
+        print("Lab instruments turned on.")
+
+    @listen(control_lab_instruments)
+    @weave.op()
+    def monitor_safety(self):
+        self.safety_agent.monitor_parameters()
+        if self.safety_agent.is_safe():
+            print("Safety status: Safe")
+        else:
+            self.state.safety_status = "unsafe"
+            self.safety_agent.notify_scientist()
+            print("Safety status: Unsafe! Notifying scientist.")
+
 @weave.op()
 def kickoff():
     experiment_flow = ExperimentFlow()
