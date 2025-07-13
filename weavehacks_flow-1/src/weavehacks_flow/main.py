@@ -36,7 +36,7 @@ Flow = FlowCompatibility
 import weave
 from agents.data_collection_agent import DataCollectionAgent
 from agents.lab_control_agent import LabControlAgent
-from agents.safety_monitoring_agent import SafetyMonitoringAgent
+from agents.safety_monitoring_agent import EnhancedSafetyMonitoringAgent
 from agents.voice_recognition_agent import SpeechRecognizerAgent
 # from .crews.data_collection_crew.data_collection_crew import DataCollectionCrew
 # from .crews.lab_control_crew.lab_control_crew import LabControlCrew
