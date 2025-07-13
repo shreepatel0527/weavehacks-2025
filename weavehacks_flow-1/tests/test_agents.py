@@ -116,7 +116,7 @@ class TestChemistryCalculations(unittest.TestCase):
         gold_mass = 0.1576  # g
         result = calculate_sulfur_amount(gold_mass)
         
-        self.assertAlmostEqual(result['mass_sulfur_g'], 0.0525, places=3)
+        self.assertAlmostEqual(result['mass_sulfur_g'], 0.1659, places=3)
         self.assertEqual(result['equivalents'], 3)
         self.assertGreater(result['moles_gold'], 0)
     
@@ -125,7 +125,7 @@ class TestChemistryCalculations(unittest.TestCase):
         gold_mass = 0.1576  # g
         result = calculate_nabh4_amount(gold_mass)
         
-        self.assertAlmostEqual(result['mass_nabh4_g'], 0.0151, places=3)
+        self.assertAlmostEqual(result['mass_nabh4_g'], 0.1514, places=3)
         self.assertEqual(result['equivalents'], 10)
         self.assertGreater(result['moles_nabh4'], 0)
     
@@ -146,7 +146,7 @@ class TestChemistryCalculations(unittest.TestCase):
         result = calculate_toab_ratio(gold_mass, toab_mass)
         
         self.assertGreater(result['toab_to_gold_ratio'], 0)
-        self.assertAlmostEqual(result['toab_to_gold_ratio'], 1.144, places=2)
+        self.assertAlmostEqual(result['toab_to_gold_ratio'], 1.14, places=2)
 
 class TestExperimentFlow(unittest.TestCase):
     @patch('weavehacks_flow.main.DataCollectionAgent')

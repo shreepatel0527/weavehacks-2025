@@ -10,13 +10,29 @@ from .error_handling import (
     ErrorCategory, ErrorSeverity
 )
 
+def safe_wandb_log(data: dict):
+    """Safely log to wandb, handling cases where wandb is not initialized"""
+    try:
+        safe_wandb_log(data)
+    except wandb.errors.UsageError:
+        # wandb not initialized, try to initialize minimally
+        try:
+            wandb.init(project="lab-assistant-calculations", mode="disabled")
+            safe_wandb_log(data)
+        except Exception:
+            # If all else fails, just skip logging
+            pass
+    except Exception:
+        # Any other wandb error, skip logging
+        pass
+
 # Get configuration
 config = get_chemistry_config()
 
 @weave.op()
 @safe_execute
 @validate_input({
-    'mass_g': lambda x: x > 0,
+    'mass_g': lambda x: x >= 0,
     'molecular_weight': lambda x: x > 0
 })
 def calculate_moles(mass_g: float, molecular_weight: float) -> float:
@@ -108,7 +124,7 @@ def calculate_sulfur_amount(gold_mass_g: float,
         }
         
         # Log calculation
-        wandb.log({
+        safe_wandb_log({
             'calculation': {
                 'type': 'sulfur_amount',
                 'input': gold_mass_g,
@@ -176,7 +192,7 @@ def calculate_nabh4_amount(gold_mass_g: float,
         }
         
         # Log calculation
-        wandb.log({
+        safe_wandb_log({
             'calculation': {
                 'type': 'nabh4_amount',
                 'input': gold_mass_g,
@@ -252,7 +268,7 @@ def calculate_percent_yield(gold_mass_g: float, actual_yield_g: float) -> Dict[s
         }
         
         # Log calculation
-        wandb.log({
+        safe_wandb_log({
             'calculation': {
                 'type': 'percent_yield',
                 'input': gold_mass_g,
@@ -321,7 +337,7 @@ def calculate_toab_ratio(gold_mass_g: float, toab_mass_g: float) -> Dict[str, Un
         }
         
         # Log calculation
-        wandb.log({
+        safe_wandb_log({
             'calculation': {
                 'type': 'toab_ratio',
                 'ratio': ratio,

@@ -30,6 +30,10 @@ class ChemistryConfig:
     
     # Concentration
     DEFAULT_TOAB_CONCENTRATION: float = 0.05  # M
+    
+    # Yield thresholds
+    MIN_YIELD_PERCENT: float = 30.0
+    TARGET_YIELD_PERCENT: float = 40.0
 
 @dataclass
 class SafetyConfig:

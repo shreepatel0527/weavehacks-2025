@@ -12,6 +12,22 @@ from pathlib import Path
 import weave
 import wandb
 
+def safe_wandb_log(data: dict):
+    """Safely log to wandb, handling cases where wandb is not initialized"""
+    try:
+        wandb.log(data)
+    except wandb.errors.UsageError:
+        # wandb not initialized, try to initialize minimally
+        try:
+            wandb.init(project="lab-assistant-errors", mode="disabled")
+            wandb.log(data)
+        except Exception:
+            # If all else fails, just skip logging
+            pass
+    except Exception:
+        # Any other wandb error, skip logging
+        pass
+
 T = TypeVar('T')
 
 class ErrorSeverity(Enum):
@@ -226,7 +242,7 @@ class ErrorHandler:
         # Log to W&B if available
         if self.use_weave:
             try:
-                wandb.log({'error': error_record})
+                safe_wandb_log({'error': error_record})
             except:
                 pass
         
@@ -396,15 +412,32 @@ def validate_input(validation_rules: Dict[str, Callable]) -> Callable:
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            # Validate kwargs based on rules
+            import inspect
+            
+            # Get function signature to map positional args to parameter names
+            sig = inspect.signature(func)
+            param_names = list(sig.parameters.keys())
+            
+            # Create a combined dict of all arguments
+            all_args = {}
+            
+            # Add positional arguments
+            for i, arg in enumerate(args):
+                if i < len(param_names):
+                    all_args[param_names[i]] = arg
+            
+            # Add keyword arguments
+            all_args.update(kwargs)
+            
+            # Validate based on rules
             for param_name, validator in validation_rules.items():
-                if param_name in kwargs:
-                    value = kwargs[param_name]
+                if param_name in all_args:
+                    value = all_args[param_name]
                     if not validator(value):
                         raise CalculationError(
                             f"Invalid {param_name}: {value}",
                             func.__name__,
-                            kwargs
+                            all_args
                         )
             
             return func(*args, **kwargs)

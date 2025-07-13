@@ -12,6 +12,22 @@ sys.path.insert(0, str(parent_dir))
 import weave
 import wandb
 
+def safe_wandb_log(data: dict):
+    """Safely log to wandb, handling cases where wandb is not initialized"""
+    try:
+        wandb.log(data)
+    except wandb.errors.UsageError:
+        # wandb not initialized, try to initialize minimally
+        try:
+            wandb.init(project="lab-assistant-integrations", mode="disabled")
+            safe_wandb_log(data)
+        except Exception:
+            # If all else fails, just skip logging
+            pass
+    except Exception:
+        # Any other wandb error, skip logging
+        pass
+
 class ExternalAPIIntegration:
     """Wrapper for external scientific API integrations"""
     
@@ -50,7 +66,7 @@ class ExternalAPIIntegration:
         try:
             # Assuming the arxiv_api has a search function
             results = self.arxiv_api.search(query, max_results=max_results)
-            wandb.log({
+            safe_wandb_log({
                 'api_call': {
                     'api': 'arxiv',
                     'query': query,
@@ -70,7 +86,7 @@ class ExternalAPIIntegration:
         try:
             # Assuming the esm_api has an embedding function
             embedding = self.esm_api.get_embedding(sequence)
-            wandb.log({
+            safe_wandb_log({
                 'api_call': {
                     'api': 'esm',
                     'sequence_length': len(sequence),
@@ -90,7 +106,7 @@ class ExternalAPIIntegration:
         try:
             # Assuming the gs_api has a search function
             results = self.gs_api.search(query, num_results=num_results)
-            wandb.log({
+            safe_wandb_log({
                 'api_call': {
                     'api': 'google_scholar',
                     'query': query,
@@ -158,7 +174,7 @@ class ExternalAPIIntegration:
         chemical_key = chemical_name.replace("₄", "4").replace("₂", "2")
         
         if chemical_key in safety_data:
-            wandb.log({
+            safe_wandb_log({
                 'safety_lookup': {
                     'chemical': chemical_name,
                     'found': True
@@ -166,7 +182,7 @@ class ExternalAPIIntegration:
             })
             return safety_data[chemical_key]
         else:
-            wandb.log({
+            safe_wandb_log({
                 'safety_lookup': {
                     'chemical': chemical_name,
                     'found': False
