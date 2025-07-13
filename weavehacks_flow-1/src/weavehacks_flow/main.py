@@ -108,20 +108,7 @@ class ExperimentFlow(FlowCompatibility):
     @start()
     def initialize_experiment(self):
         print("Initializing experiment...")
-        # Start video monitoring for the experiment
-        result = self.video_agent.start_monitoring()
-        if result['status'] == 'success':
-            print("Video monitoring started successfully")
-        else:
-            print(f"Warning: Video monitoring failed to start: {result['message']}")
         
-        # Start recording
-        recording_result = self.video_agent.start_recording()
-        if recording_result['status'] == 'success':
-            print("Video recording started")
-        else:
-            print(f"Warning: Video recording failed to start: {recording_result['message']}")
-
     @weave.op()
     def update_step(self):
         self.state.step_num += 1
@@ -179,6 +166,51 @@ class ExperimentFlow(FlowCompatibility):
         self.state.mass_sulfur = self.data_agent.record_data(prompt)
         print(f"Sulfur mass recorded: {self.state.mass_sulfur}g")
         self.update_step()
+
+    # DO NOT MODIFY ABOVE THIS !!! 
+
+    # write an initiailize overnight monitoring function that starts the video feed, 
+    # calls open the safety monitoring agent, and puts the lab control agent on
+    # alert. 
+
+    # if the video feed or the safety monitoring agent determine there is a safety
+    # issue, they will notify the scientist and halt the experiment with the lab
+    # control agent.
+
+    # here are snippets of relevant code, please synergize these
+
+    # Start video monitoring for the experiment
+    result = self.video_agent.start_monitoring()
+    if result['status'] == 'success':
+        print("Video monitoring started successfully")
+    else:
+        print(f"Warning: Video monitoring failed to start: {result['message']}")
+    
+    # Start recording
+    recording_result = self.video_agent.start_recording()
+    if recording_result['status'] == 'success':
+        print("Video recording started")
+    else:
+        print(f"Warning: Video recording failed to start: {recording_result['message']}")
+
+    @weave.op()
+    def control_lab_instruments(self):
+        self.lab_agent.turn_on("centrifuge")
+        self.lab_agent.turn_on("UV-Vis")
+        print("Lab instruments turned on.")
+
+    @listen(control_lab_instruments)
+    @weave.op()
+    def monitor_safety(self):
+        self.safety_agent.monitor_parameters()
+        if self.safety_agent.is_safe():
+            print("Safety status: Safe")
+        else:
+            self.state.safety_status = "unsafe"
+            self.safety_agent.notify_scientist()
+            print("Safety status: Unsafe! Notifying scientist.")
+
+    ## DO NOT MODIFY BELOW THIS !!! 
 
     @listen(weigh_sulfur)
     @weave.op()
@@ -272,23 +304,7 @@ class ExperimentFlow(FlowCompatibility):
     @listen(measure_solvent)
     '''
 
-    @weave.op()
-    def control_lab_instruments(self):
-        self.lab_agent.turn_on("centrifuge")
-        self.lab_agent.turn_on("UV-Vis")
-        print("Lab instruments turned on.")
-
-    @listen(control_lab_instruments)
-    @weave.op()
-    def monitor_safety(self):
-        self.safety_agent.monitor_parameters()
-        if self.safety_agent.is_safe():
-            print("Safety status: Safe")
-        else:
-            self.state.safety_status = "unsafe"
-            self.safety_agent.notify_scientist()
-            print("Safety status: Unsafe! Notifying scientist.")
-
+    
 @weave.op()
 def kickoff():
     experiment_flow = ExperimentFlow()
