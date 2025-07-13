@@ -34,13 +34,14 @@ def listen(previous_method):
 # Use compatibility class instead of Flow
 Flow = FlowCompatibility
 import weave
-from .agents.data_collection_agent import DataCollectionAgent
-from .agents.lab_control_agent import LabControlAgent
-from .agents.safety_monitoring_agent import SafetyMonitoringAgent
+from agents.data_collection_agent import DataCollectionAgent
+from agents.lab_control_agent import LabControlAgent
+from agents.safety_monitoring_agent import SafetyMonitoringAgent
+from agents.voice_recognition_agent import SpeechRecognizerAgent
 # from .crews.data_collection_crew.data_collection_crew import DataCollectionCrew
 # from .crews.lab_control_crew.lab_control_crew import LabControlCrew
 # from .crews.safety_monitoring_crew.safety_monitoring_crew import SafetyMonitoringCrew
-from .utils.chemistry_calculations import (
+from utils.chemistry_calculations import (
     calculate_sulfur_amount,
     calculate_nabh4_amount,
     calculate_percent_yield
@@ -117,28 +118,36 @@ class ExperimentFlow(FlowCompatibility):
     @listen(initialize_experiment)
     @weave.op()
     def weigh_gold(self):
-        self.state.mass_gold = self.data_agent.record_data("Weigh HAuCl₄·3H₂O (0.1576g) -- record mass")
+        self.state.mass_gold = self.data_agent.record_data(
+            "Weigh HAuCl₄·3H₂O (0.1576g) -- record mass", use_voice=True
+        )
         print(f"Gold mass recorded: {self.state.mass_gold}g")
         self.update_step()
 
     @listen(weigh_gold)
     @weave.op()
     def measure_nanopure_rt(self):
-        self.state.volume_nanopure_rt = self.data_agent.record_data("Measure water (10mL) -- record vol")
+        self.state.volume_nanopure_rt = self.data_agent.record_data(
+            "Measure water (10mL) -- record vol", use_voice=True
+        )
         print(f"Room Temp Nanopure Volume recorded: {self.state.volume_nanopure_rt}mL")
         self.update_step()
 
     @listen(measure_nanopure_rt)
     @weave.op()
     def weigh_toab(self):
-        self.state.mass_toab = self.data_agent.record_data("Weigh TOAB (~0.25g) -- record mass")
+        self.state.mass_toab = self.data_agent.record_data(
+            "Weigh TOAB (~0.25g) -- record mass", use_voice=True
+        )
         print(f"TOAB mass recorded: {self.state.mass_toab}g")
         self.update_step()
 
     @listen(weigh_toab)
     @weave.op()
     def measure_toluene(self):
-        self.state.volume_toluene = self.data_agent.record_data("Measure toluene (10mL) -- record vol")
+        self.state.volume_toluene = self.data_agent.record_data(
+            "Measure toluene (10mL) -- record vol", use_voice=True
+        )
         print(f"Toluene volume recorded: {self.state.volume_toluene}mL")
         self.update_step()
 

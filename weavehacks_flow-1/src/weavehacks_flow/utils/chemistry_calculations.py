@@ -4,8 +4,8 @@ Chemistry calculation utilities for nanoparticle synthesis with error handling
 import weave
 import wandb
 from typing import Dict, Optional, Union
-from ..config.settings import get_chemistry_config
-from .error_handling import (
+from config.settings import get_chemistry_config
+from utils.error_handling import (
     CalculationError, safe_execute, validate_input,
     ErrorCategory, ErrorSeverity
 )
