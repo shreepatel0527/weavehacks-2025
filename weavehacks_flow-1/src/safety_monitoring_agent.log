@@ -1,0 +1,20 @@
+2025-07-13 11:34:58,868 - weavehacks_flow.agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 11:36:18,699 - weavehacks_flow.agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 11:36:18,709 - weave.trace.weave_init - INFO - Please login to Weights & Biases (https://wandb.ai/) to continue...
+2025-07-13 11:36:24,552 - weave.trace.weave_init - INFO - Please login to Weights & Biases (https://wandb.ai/) to continue...
+2025-07-13 11:36:26,196 - weave.trace.op - WARNING - Warning: Traces will not be logged. Call weave.init to log your traces to a project.
+ (subsequent messages of this type will be suppressed)
+2025-07-13 11:36:48,441 - weavehacks_flow.agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 11:36:48,450 - weave.trace.weave_init - INFO - Please login to Weights & Biases (https://wandb.ai/) to continue...
+2025-07-13 11:36:50,151 - weave.trace.weave_init - INFO - Please login to Weights & Biases (https://wandb.ai/) to continue...
+2025-07-13 11:36:50,940 - weave.trace.op - WARNING - Warning: Traces will not be logged. Call weave.init to log your traces to a project.
+ (subsequent messages of this type will be suppressed)
+2025-07-13 11:36:50,940 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Initialized 4 experiment configurations
+2025-07-13 11:36:50,940 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Enhanced Safety Monitoring Agent initialized
+2025-07-13 11:37:39,494 - weavehacks_flow.agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 11:37:39,509 - weave.trace.weave_init - INFO - Please login to Weights & Biases (https://wandb.ai/) to continue...
+2025-07-13 11:38:28,797 - weave.trace.weave_init - INFO - Please login to Weights & Biases (https://wandb.ai/) to continue...
+2025-07-13 11:38:29,359 - weave.trace.op - WARNING - Warning: Traces will not be logged. Call weave.init to log your traces to a project.
+ (subsequent messages of this type will be suppressed)
+2025-07-13 11:38:29,359 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Initialized 4 experiment configurations
+2025-07-13 11:38:29,359 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Enhanced Safety Monitoring Agent initialized

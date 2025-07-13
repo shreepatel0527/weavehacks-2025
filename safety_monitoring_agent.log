@@ -1,0 +1,89 @@
+2025-07-13 11:26:13,517 - __main__ - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 11:26:13,518 - __main__ - INFO - Initialized 4 experiment configurations
+2025-07-13 11:26:13,518 - __main__ - INFO - Enhanced Safety Monitoring Agent initialized
+2025-07-13 11:26:13,518 - __main__ - INFO - Updated safety thresholds for experiment: Gold Nanoparticle Synthesis (Room Temp)
+2025-07-13 11:26:13,518 - __main__ - INFO - Temperature: 20.0-25.0°C
+2025-07-13 11:26:13,518 - __main__ - INFO - Pressure: 100.0-102.0kPa
+2025-07-13 11:26:13,518 - __main__ - INFO - Set current experiment to: Gold Nanoparticle Synthesis (Room Temp)
+2025-07-13 11:26:13,518 - __main__ - INFO - Safety monitoring loop started
+2025-07-13 11:26:13,518 - __main__ - INFO - Enhanced safety monitoring started
+2025-07-13 11:26:15,522 - __main__ - WARNING - SAFETY ALERT: CRITICAL: temperature below safe range at 17.62°C
+2025-07-13 11:26:15,524 - __main__ - INFO - SCIENTIST NOTIFICATION: {
+  "type": "safety_alert",
+  "timestamp": "2025-07-13T11:26:15.521571",
+  "level": "critical",
+  "parameter": "temperature",
+  "value": 17.62,
+  "message": "CRITICAL: temperature below safe range at 17.62\u00b0C",
+  "experiment": "gold_nanoparticle_room_temp",
+  "requires_immediate_attention": true
+}
+2025-07-13 11:26:15,525 - __main__ - INFO - Scientist contacted for temperature alert
+2025-07-13 11:26:19,530 - __main__ - WARNING - SAFETY ALERT: CRITICAL: temperature above safe range at 29.76°C
+2025-07-13 11:26:21,532 - __main__ - WARNING - SAFETY ALERT: WARNING: temperature outside optimal range at 26.42°C
+2025-07-13 11:26:33,553 - __main__ - WARNING - SAFETY ALERT: CRITICAL: temperature below safe range at 15.71°C
+2025-07-13 11:26:33,555 - __main__ - WARNING - SAFETY ALERT: CRITICAL: pressure above safe range at 104.76kPa
+2025-07-13 11:26:33,555 - __main__ - INFO - SCIENTIST NOTIFICATION: {
+  "type": "safety_alert",
+  "timestamp": "2025-07-13T11:26:33.553262",
+  "level": "critical",
+  "parameter": "pressure",
+  "value": 104.76,
+  "message": "CRITICAL: pressure above safe range at 104.76kPa",
+  "experiment": "gold_nanoparticle_room_temp",
+  "requires_immediate_attention": true
+}
+2025-07-13 11:26:33,555 - __main__ - INFO - Scientist contacted for pressure alert
+2025-07-13 11:26:43,524 - __main__ - INFO - Enhanced safety monitoring stopped
+2025-07-13 11:26:48,529 - __main__ - INFO - Updated safety thresholds for experiment: Gold Nanoparticle Synthesis (Ice Bath)
+2025-07-13 11:26:48,531 - __main__ - INFO - Temperature: 0.0-5.0°C
+2025-07-13 11:26:48,532 - __main__ - INFO - Pressure: 100.0-102.0kPa
+2025-07-13 11:26:48,533 - __main__ - INFO - Set current experiment to: Gold Nanoparticle Synthesis (Ice Bath)
+2025-07-13 11:26:48,533 - __main__ - INFO - Safety monitoring loop started
+2025-07-13 11:26:48,533 - __main__ - INFO - Enhanced safety monitoring started
+2025-07-13 11:26:48,535 - __main__ - WARNING - SAFETY ALERT: CRITICAL: temperature below safe range at -2.34°C
+2025-07-13 11:26:50,537 - __main__ - WARNING - SAFETY ALERT: CRITICAL: temperature below safe range at -2.89°C
+2025-07-13 11:26:52,542 - __main__ - WARNING - SAFETY ALERT: CRITICAL: pressure below safe range at 98.88kPa
+2025-07-13 11:27:06,573 - __main__ - WARNING - SAFETY ALERT: CRITICAL: pressure below safe range at 98.38kPa
+2025-07-13 11:27:12,586 - __main__ - WARNING - SAFETY ALERT: CRITICAL: pressure above safe range at 104.34kPa
+2025-07-13 11:27:14,591 - __main__ - WARNING - SAFETY ALERT: CRITICAL: pressure below safe range at 98.76kPa
+2025-07-13 11:27:18,541 - __main__ - INFO - Enhanced safety monitoring stopped
+2025-07-13 11:27:23,545 - __main__ - INFO - Updated safety thresholds for experiment: Gold Nanoparticle Synthesis (Vigorous Stirring)
+2025-07-13 11:27:23,546 - __main__ - INFO - Temperature: 25.0-35.0°C
+2025-07-13 11:27:23,546 - __main__ - INFO - Pressure: 100.0-103.0kPa
+2025-07-13 11:27:23,546 - __main__ - INFO - Set current experiment to: Gold Nanoparticle Synthesis (Vigorous Stirring)
+2025-07-13 11:27:23,546 - __main__ - INFO - Safety monitoring loop started
+2025-07-13 11:27:23,546 - __main__ - INFO - Enhanced safety monitoring started
+2025-07-13 11:27:29,558 - __main__ - WARNING - SAFETY ALERT: CRITICAL: pressure below safe range at 97.99kPa
+2025-07-13 11:27:47,598 - __main__ - WARNING - SAFETY ALERT: CRITICAL: pressure below safe range at 97.59kPa
+2025-07-13 11:27:53,552 - __main__ - INFO - Enhanced safety monitoring stopped
+2025-07-13 11:27:58,559 - __main__ - INFO - Updated safety thresholds for experiment: Overnight Stirring Under N₂
+2025-07-13 11:27:58,559 - __main__ - INFO - Temperature: 18.0-28.0°C
+2025-07-13 11:27:58,559 - __main__ - INFO - Pressure: 99.0-103.0kPa
+2025-07-13 11:27:58,559 - __main__ - INFO - Set current experiment to: Overnight Stirring Under N₂
+2025-07-13 11:27:58,559 - __main__ - INFO - Safety monitoring loop started
+2025-07-13 11:27:58,559 - __main__ - INFO - Enhanced safety monitoring started
+2025-07-13 11:28:06,573 - __main__ - WARNING - SAFETY ALERT: WARNING: pressure outside optimal range at 97.77kPa
+2025-07-13 11:32:25,701 - __main__ - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 11:32:25,702 - __main__ - INFO - Initialized 4 experiment configurations
+2025-07-13 11:32:25,702 - __main__ - INFO - Enhanced Safety Monitoring Agent initialized
+2025-07-13 11:32:25,703 - __main__ - INFO - Updated safety thresholds for experiment: Gold Nanoparticle Synthesis (Room Temp)
+2025-07-13 11:32:25,703 - __main__ - INFO - Temperature: 20.0-25.0°C
+2025-07-13 11:32:25,703 - __main__ - INFO - Pressure: 100.0-102.0kPa
+2025-07-13 11:32:25,703 - __main__ - INFO - Set current experiment to: Gold Nanoparticle Synthesis (Room Temp)
+2025-07-13 11:32:25,703 - __main__ - INFO - Safety monitoring loop started
+2025-07-13 11:32:25,703 - __main__ - INFO - Enhanced safety monitoring started
+2025-07-13 11:32:25,703 - __main__ - WARNING - SAFETY ALERT: CRITICAL: pressure above safe range at 104.23kPa
+2025-07-13 11:32:25,703 - __main__ - INFO - SCIENTIST NOTIFICATION: {
+  "type": "safety_alert",
+  "timestamp": "2025-07-13T11:32:25.703277",
+  "level": "critical",
+  "parameter": "pressure",
+  "value": 104.23,
+  "message": "CRITICAL: pressure above safe range at 104.23kPa",
+  "experiment": "gold_nanoparticle_room_temp",
+  "requires_immediate_attention": true
+}
+2025-07-13 11:32:25,703 - __main__ - INFO - Scientist contacted for pressure alert
+2025-07-13 11:32:33,721 - __main__ - WARNING - SAFETY ALERT: CRITICAL: pressure above safe range at 104.86kPa
+2025-07-13 11:32:38,660 - __main__ - INFO - Enhanced safety monitoring stopped
