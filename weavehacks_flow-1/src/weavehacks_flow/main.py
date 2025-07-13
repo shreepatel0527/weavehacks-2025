@@ -37,6 +37,7 @@ import weave
 from .agents.data_collection_agent import DataCollectionAgent
 from .agents.lab_control_agent import LabControlAgent
 from .agents.safety_monitoring_agent import SafetyMonitoringAgent
+from .agents.video_monitoring_agent import VideoMonitoringAgent
 # from .crews.data_collection_crew.data_collection_crew import DataCollectionCrew
 # from .crews.lab_control_crew.lab_control_crew import LabControlCrew
 # from .crews.safety_monitoring_crew.safety_monitoring_crew import SafetyMonitoringCrew
@@ -79,6 +80,7 @@ class ExperimentFlow(FlowCompatibility):
         self.data_agent = DataCollectionAgent()
         self.lab_agent = LabControlAgent()
         self.safety_agent = SafetyMonitoringAgent()
+        self.video_agent = VideoMonitoringAgent()
         self._setup_workflow()
     
     def _setup_workflow(self):
@@ -106,6 +108,19 @@ class ExperimentFlow(FlowCompatibility):
     @start()
     def initialize_experiment(self):
         print("Initializing experiment...")
+        # Start video monitoring for the experiment
+        result = self.video_agent.start_monitoring()
+        if result['status'] == 'success':
+            print("Video monitoring started successfully")
+        else:
+            print(f"Warning: Video monitoring failed to start: {result['message']}")
+        
+        # Start recording
+        recording_result = self.video_agent.start_recording()
+        if recording_result['status'] == 'success':
+            print("Video recording started")
+        else:
+            print(f"Warning: Video recording failed to start: {recording_result['message']}")
 
     @weave.op()
     def update_step(self):
@@ -222,6 +237,13 @@ class ExperimentFlow(FlowCompatibility):
         self.state.exp_status = "complete"
         percent_yield = self.calculate_percent_yield()
         
+        # Stop video monitoring and recording
+        stop_result = self.video_agent.stop_monitoring()
+        print(f"Video monitoring stopped: {stop_result['message']}")
+        
+        # Get video monitoring summary
+        video_summary = self.video_agent.get_event_summary()
+        
         print("\n" + "="*50)
         print("EXPERIMENT COMPLETED SUCCESSFULLY")
         print("="*50)
@@ -234,6 +256,14 @@ class ExperimentFlow(FlowCompatibility):
         print(f"- Final nanoparticle mass: {self.state.mass_final}g")
         print(f"- Percent yield: {percent_yield:.2f}%")
         print(f"- Safety status: {self.state.safety_status}")
+        print(f"\nVideo Monitoring Summary:")
+        print(f"- Frames processed: {video_summary['frames_processed']}")
+        print(f"- Events detected: {video_summary['total_events']}")
+        print(f"- Safety violations: {video_summary['safety_violations']}")
+        if video_summary['event_counts']:
+            print("- Event breakdown:")
+            for event_type, count in video_summary['event_counts'].items():
+                print(f"  * {event_type}: {count}")
         print("\n" + "="*50)
     '''
     def measure_solvent(self):
