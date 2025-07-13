@@ -1,22 +1,58 @@
 #!/usr/bin/env python
 from random import randint
 from pydantic import BaseModel
-from crewai.flow import Flow, listen, start
+# CrewAI Flow compatibility layer for Python 3.9
+class FlowCompatibility:
+    """Simple compatibility layer to replace crewai.flow for Python 3.9"""
+    def __init__(self, state_class):
+        self.state = state_class()
+        self._step_methods = []
+        
+    def kickoff(self):
+        """Execute the workflow steps in sequence"""
+        for method in self._step_methods:
+            method()
+    
+    def add_step(self, method):
+        """Add a step method to the workflow"""
+        self._step_methods.append(method)
+
+def start():
+    """Decorator to mark start method"""
+    def decorator(func):
+        func._is_start = True
+        return func
+    return decorator
+
+def listen(previous_method):
+    """Decorator to mark method dependencies"""
+    def decorator(func):
+        func._listens_to = previous_method
+        return func
+    return decorator
+
+# Use compatibility class instead of Flow
+Flow = FlowCompatibility
 import weave
-from weavehacks_flow.agents.data_collection_agent import DataCollectionAgent
-from weavehacks_flow.agents.lab_control_agent import LabControlAgent
-from weavehacks_flow.agents.safety_monitoring_agent import SafetyMonitoringAgent
-from weavehacks_flow.crews.data_collection_crew.data_collection_crew import DataCollectionCrew
-from weavehacks_flow.crews.lab_control_crew.lab_control_crew import LabControlCrew
-from weavehacks_flow.crews.safety_monitoring_crew.safety_monitoring_crew import SafetyMonitoringCrew
-from weavehacks_flow.utils.chemistry_calculations import (
+from .agents.data_collection_agent import DataCollectionAgent
+from .agents.lab_control_agent import LabControlAgent
+from .agents.safety_monitoring_agent import SafetyMonitoringAgent
+# from .crews.data_collection_crew.data_collection_crew import DataCollectionCrew
+# from .crews.lab_control_crew.lab_control_crew import LabControlCrew
+# from .crews.safety_monitoring_crew.safety_monitoring_crew import SafetyMonitoringCrew
+from .utils.chemistry_calculations import (
     calculate_sulfur_amount,
     calculate_nabh4_amount,
     calculate_percent_yield
 )
 
-# Initialize W&B Weave
-weave.init('weavehacks-lab-assistant')
+# Initialize W&B Weave (optional - will work without API key)
+try:
+    weave.init('weavehacks-lab-assistant')
+    print("Weave initialized successfully")
+except Exception as e:
+    print(f"Weave initialization failed (this is optional): {e}")
+    print("Continuing without W&B logging...")
 
 class ExperimentState(BaseModel):
     # experiment tracking
@@ -37,10 +73,35 @@ class ExperimentState(BaseModel):
     # safety status
     safety_status: str = "safe" # safe or unsafe
 
-class ExperimentFlow(Flow[ExperimentState]):
-    data_agent = DataCollectionAgent()
-    lab_agent = LabControlAgent()
-    safety_agent = SafetyMonitoringAgent()
+class ExperimentFlow(FlowCompatibility):
+    def __init__(self):
+        super().__init__(ExperimentState)
+        self.data_agent = DataCollectionAgent()
+        self.lab_agent = LabControlAgent()
+        self.safety_agent = SafetyMonitoringAgent()
+        self._setup_workflow()
+    
+    def _setup_workflow(self):
+        """Set up the workflow execution order"""
+        # Define the workflow steps in order
+        workflow_steps = [
+            self.initialize_experiment,
+            self.weigh_gold,
+            self.measure_nanopure_rt,
+            self.weigh_toab,
+            self.measure_toluene,
+            self.calculate_sulfur_amount,
+            self.weigh_sulfur,
+            self.calculate_nabh4_amount,
+            self.weigh_nabh4,
+            self.measure_nanopure_cold,
+            self.weigh_final,
+            self.calculate_percent_yield,
+            self.finalize_experiment
+        ]
+        
+        for step in workflow_steps:
+            self.add_step(step)
 
     @start()
     def initialize_experiment(self):
