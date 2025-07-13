@@ -17,7 +17,7 @@ sounddevice>=0.4.6
 soundfile>=0.12.1
 
 # UI support (comment out if not using streamlit)
-streamlit>=1.32.0,<2.0.0
+streamlit>=1.37.0,<2.0.0
 plotly>=5.20.0,<6.0.0
 
 # Testing
