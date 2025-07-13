@@ -91,7 +91,8 @@ class DataCollectionAgent:
         Returns:
             float: The extracted number, or None if no number is found.
         """
-        match = re.search(r"[-+]?\d*\.\d+|\d+", text)
+        #match = re.search(r"[-+]?\d*\.\d+|\d+", text)
+        match = re.search(r"[-+]?\d*.?\d+(?:[eE][-+]?\d+)?", text)
         if match:
             return float(match.group())
         return None
