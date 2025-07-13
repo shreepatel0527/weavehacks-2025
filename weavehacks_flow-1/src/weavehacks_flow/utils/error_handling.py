@@ -9,11 +9,20 @@ from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
 from enum import Enum
 import json
 from pathlib import Path
-import weave
-import wandb
+try:
+    import weave
+except ImportError:
+    weave = None
+
+try:
+    import wandb
+except ImportError:
+    wandb = None
 
 def safe_wandb_log(data: dict):
     """Safely log to wandb, handling cases where wandb is not initialized"""
+    if wandb is None:
+        return
     try:
         wandb.log(data)
     except wandb.errors.UsageError:

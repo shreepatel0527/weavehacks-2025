@@ -1,14 +1,29 @@
 """
 Chemistry calculation utilities for nanoparticle synthesis with error handling
 """
-import weave
-import wandb
+try:
+    import weave
+except ImportError:
+    weave = None
+
+try:
+    import wandb
+except ImportError:
+    wandb = None
 from typing import Dict, Optional, Union
 from ..config.settings import get_chemistry_config
 from ..utils.error_handling import (
     CalculationError, safe_execute, validate_input,
     ErrorCategory, ErrorSeverity
 )
+
+def weave_op():
+    """Optional weave decorator that works when weave is not available"""
+    def decorator(func):
+        if weave is not None:
+            return weave.op()(func)
+        return func
+    return decorator
 
 def safe_wandb_log(data: dict):
     """Safely log to wandb, handling cases where wandb is not initialized"""
@@ -29,7 +44,7 @@ def safe_wandb_log(data: dict):
 # Get configuration
 config = get_chemistry_config()
 
-@weave.op()
+@weave_op()
 @safe_execute
 @validate_input({
     'mass_g': lambda x: x >= 0,
@@ -58,7 +73,7 @@ def calculate_moles(mass_g: float, molecular_weight: float) -> float:
     
     return mass_g / molecular_weight
 
-@weave.op()
+@weave_op()
 @safe_execute
 @validate_input({
     'moles': lambda x: x >= 0,
@@ -77,7 +92,7 @@ def calculate_mass(moles: float, molecular_weight: float) -> float:
     """
     return moles * molecular_weight
 
-@weave.op()
+@weave_op()
 @safe_execute
 @validate_input({
     'gold_mass_g': lambda x: x > 0,
@@ -142,7 +157,7 @@ def calculate_sulfur_amount(gold_mass_g: float,
             {'gold_mass_g': gold_mass_g, 'equivalents': equivalents}
         )
 
-@weave.op()
+@weave_op()
 @safe_execute
 @validate_input({
     'gold_mass_g': lambda x: x > 0,
@@ -210,7 +225,7 @@ def calculate_nabh4_amount(gold_mass_g: float,
             {'gold_mass_g': gold_mass_g, 'equivalents': equivalents}
         )
 
-@weave.op()
+@weave_op()
 @safe_execute
 @validate_input({
     'gold_mass_g': lambda x: x > 0,
@@ -287,7 +302,7 @@ def calculate_percent_yield(gold_mass_g: float, actual_yield_g: float) -> Dict[s
             {'gold_mass_g': gold_mass_g, 'actual_yield_g': actual_yield_g}
         )
 
-@weave.op()
+@weave_op()
 @safe_execute
 @validate_input({
     'gold_mass_g': lambda x: x > 0,
@@ -354,7 +369,7 @@ def calculate_toab_ratio(gold_mass_g: float, toab_mass_g: float) -> Dict[str, Un
             {'gold_mass_g': gold_mass_g, 'toab_mass_g': toab_mass_g}
         )
 
-@weave.op()
+@weave_op()
 def calculate_all_reagents(gold_mass_g: float) -> Dict[str, Dict[str, float]]:
     """
     Calculate all reagent amounts for a complete synthesis

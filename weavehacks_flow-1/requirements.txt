@@ -2,7 +2,7 @@
 # Updated to avoid dependency resolution issues
 
 # Core dependencies with version constraints
-pydantic>=1.10.0,<2.0.0
+pydantic>=2.0.0,<3.0.0
 numpy>=1.24.0,<1.25.0
 matplotlib>=3.7.0,<3.8.0
 scipy>=1.10.0,<1.11.0
@@ -32,10 +32,10 @@ uvicorn>=0.29.0,<1.0.0
 
 # Note: The following packages are NOT included due to dependency conflicts:
 # - crewai: Has complex langchain dependencies that cause resolution issues
-# - openai-whisper: Very large package with many dependencies
+# - openai-whisper: Very large package with many dependencies  
 # - wandb/weave: Optional logging, the code works without them
 #
-# To install these separately if needed:
+# To install these separately if needed (but may cause Pydantic conflicts):
 # pip install --user crewai==0.1.40
 # pip install --user openai-whisper
-# pip install --user wandb weave
+# pip install --user "wandb>=0.16.0" "weave>=0.50.0"

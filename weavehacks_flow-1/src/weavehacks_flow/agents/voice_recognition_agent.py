@@ -9,8 +9,15 @@ from typing import Optional, Tuple, Dict, Any
 import warnings
 import logging
 warnings.filterwarnings("ignore")
-import weave
-import wandb
+try:
+    import weave
+except ImportError:
+    weave = None
+
+try:
+    import wandb
+except ImportError:
+    wandb = None
 try:
     from ..utils.audio_diagnostics import AudioDiagnostics
 except ImportError:

@@ -12,8 +12,15 @@ from typing import Dict, List, Tuple, Optional, Callable, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import json
-import weave
-import wandb
+try:
+    import weave
+except ImportError:
+    weave = None
+
+try:
+    import wandb
+except ImportError:
+    wandb = None
 from collections import deque
 import logging
 

@@ -1,5 +1,12 @@
-import weave
-import wandb
+try:
+    import weave
+except ImportError:
+    weave = None
+
+try:
+    import wandb
+except ImportError:
+    wandb = None
 from .voice_recognition_agent import SpeechRecognizerAgent
 import re
 import csv
