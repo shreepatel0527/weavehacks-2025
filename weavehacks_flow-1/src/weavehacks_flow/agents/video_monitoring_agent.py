@@ -2,7 +2,6 @@
 Video Monitoring Agent for Lab Experiments
 Integrates video monitoring capabilities with the existing lab assistant system
 """
-import cv2
 import numpy as np
 import threading
 import queue
@@ -17,6 +16,14 @@ import weave
 import wandb
 from collections import deque
 import logging
+
+try:
+    import cv2
+    CV2_AVAILABLE = True
+except ImportError:
+    CV2_AVAILABLE = False
+    import warnings
+    warnings.warn("OpenCV (cv2) not available. Video monitoring features will be disabled.")
 
 def safe_wandb_log(data: dict):
     """Safely log to wandb, handling cases where wandb is not initialized"""
@@ -60,9 +67,18 @@ class ColorChangeAnalyzer:
         self.sensitivity = sensitivity
         self.color_history = deque(maxlen=30)
         self.reference_colors = {}
+        self.cv2_available = CV2_AVAILABLE
         
     def analyze(self, frame: np.ndarray, roi: Optional[Tuple] = None) -> Dict[str, Any]:
         """Analyze color in frame or ROI"""
+        if not self.cv2_available:
+            return {
+                'current_color': None,
+                'change_detected': False,
+                'change_magnitude': 0,
+                'color_name': 'unknown'
+            }
+            
         # Extract ROI if specified, otherwise use center region
         if roi:
             x, y, w, h = roi
@@ -138,11 +154,21 @@ class MotionDetector:
     """Detect motion in video frames for stirring and mixing detection"""
     
     def __init__(self):
-        self.background_subtractor = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
+        self.cv2_available = CV2_AVAILABLE
+        if self.cv2_available:
+            self.background_subtractor = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
         self.min_area = 500
         
     def detect(self, frame: np.ndarray) -> Dict[str, Any]:
         """Detect motion in frame"""
+        if not self.cv2_available:
+            return {
+                'motion_detected': False,
+                'motion_regions': [],
+                'total_motion_area': 0,
+                'motion_mask': None
+            }
+            
         # Background subtraction
         fg_mask = self.background_subtractor.apply(frame)
         
@@ -188,6 +214,7 @@ class VideoMonitoringAgent:
         self.camera_index = camera_index
         self.is_monitoring = False
         self.is_recording = False
+        self.cv2_available = CV2_AVAILABLE
         
         # Analysis components
         self.color_analyzer = ColorChangeAnalyzer()
@@ -225,9 +252,48 @@ class VideoMonitoringAgent:
         # Safety integration
         self.safety_violations = []
         
+        # Initialize video system if available
+        if self.cv2_available:
+            self._initialize_video_system()
+        else:
+            self.logger.warning("OpenCV not available - video monitoring disabled")
+    
+    def _initialize_video_system(self):
+        """Initialize and validate video system."""
+        try:
+            # Test camera access
+            test_cap = cv2.VideoCapture(self.camera_index)
+            if test_cap.isOpened():
+                test_cap.release()
+                self.logger.info(f"Camera {self.camera_index} initialized successfully")
+                return True
+            else:
+                self.logger.warning(f"Camera {self.camera_index} not available")
+                return False
+        except Exception as e:
+            self.logger.error(f"Video system initialization failed: {e}")
+            return False
+    
+    def test_camera(self) -> bool:
+        """Test if camera is accessible."""
+        if not self.cv2_available:
+            return False
+        try:
+            cap = cv2.VideoCapture(self.camera_index)
+            if cap.isOpened():
+                ret, _ = cap.read()
+                cap.release()
+                return ret
+            return False
+        except Exception:
+            return False
+        
     @weave.op()
-    def start_monitoring(self):
+    def start_monitoring(self, callback=None):
         """Start video monitoring"""
+        if not self.cv2_available:
+            return {"status": "error", "message": "OpenCV not available"}
+            
         if self.is_monitoring:
             return {"status": "already_running"}
         
@@ -251,6 +317,10 @@ class VideoMonitoringAgent:
             
             self.is_monitoring = True
             self._stop_event.clear()
+            
+            # Register callback if provided
+            if callback:
+                self.register_callback(callback)
             
             # Start threads
             capture_thread = threading.Thread(
@@ -465,6 +535,9 @@ class VideoMonitoringAgent:
     @weave.op()
     def start_recording(self, filename: Optional[str] = None):
         """Start video recording"""
+        if not self.cv2_available:
+            return {"status": "error", "message": "OpenCV not available"}
+            
         if self.is_recording:
             return {"status": "already_recording"}
         
@@ -584,7 +657,7 @@ class VideoMonitoringAgent:
         return self.safety_violations.copy()
 
 # Integration helper function
-def create_video_monitoring_agent_rebase(camera_index: int = 0) -> VideoMonitoringAgent:
+def create_video_monitoring_agent_rebase_two(camera_index: int = 0) -> VideoMonitoringAgent:
     """Factory function to create video monitoring agent"""
     return VideoMonitoringAgent(camera_index=camera_index)
 Handles video capture, analysis, and monitoring for overnight experiments

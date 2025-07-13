@@ -1,0 +1,41 @@
+2025-07-13 12:41:43,421 - weavehacks_flow.agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 12:42:04,319 - weavehacks_flow.agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 12:42:04,382 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 12:42:04,499 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 12:42:06,409 - weave.integrations.patcher - ERROR - Error patching - some logs may not be captured: kickoff_async
+Traceback (most recent call last):
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 36, in attempt_patch
+    all_successful = all_successful and patcher.attempt_patch()
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 98, in attempt_patch
+    original_value = getattr(target.base_symbol, target.attr)
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+AttributeError: kickoff_async
+2025-07-13 12:42:06,421 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 12:42:06,543 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 12:42:06,803 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/lab-assistant-errors/weave
+2025-07-13 12:42:07,522 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 12:42:07,616 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 12:42:07,738 - weave.integrations.patcher - ERROR - Error patching - some logs may not be captured: kickoff_async
+Traceback (most recent call last):
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 36, in attempt_patch
+    all_successful = all_successful and patcher.attempt_patch()
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 98, in attempt_patch
+    original_value = getattr(target.base_symbol, target.attr)
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+AttributeError: kickoff_async
+2025-07-13 12:42:07,739 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 12:42:07,867 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 12:42:08,053 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/weave
+2025-07-13 12:42:08,054 - weavehacks_flow.agents.voice_recognition_agent - WARNING - No default input device found
+2025-07-13 12:42:08,055 - weavehacks_flow.agents.voice_recognition_agent - ERROR - Audio access test failed: Error querying device -1
+2025-07-13 12:42:08,055 - weavehacks_flow.agents.voice_recognition_agent - WARNING - Audio system test failed
+2025-07-13 12:42:08,055 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Initialized 4 experiment configurations
+2025-07-13 12:42:08,055 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Enhanced Safety Monitoring Agent initialized
+2025-07-13 12:42:08,068 - video_monitoring_agent - WARNING - Camera 0 not available
+2025-07-13 12:42:08,068 - weavehacks_flow.agents.voice_recognition_agent - WARNING - No default input device found
+2025-07-13 12:42:08,068 - weavehacks_flow.agents.voice_recognition_agent - ERROR - Audio access test failed: Error querying device -1
+2025-07-13 12:42:08,068 - weavehacks_flow.agents.voice_recognition_agent - WARNING - Audio system test failed

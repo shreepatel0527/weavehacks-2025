@@ -85,6 +85,15 @@ class ExperimentFlow(FlowCompatibility):
         self.safety_agent = EnhancedSafetyMonitoringAgent()
         #self.safety_agent = SafetyMonitoringAgent()
         self.video_agent = VideoMonitoringAgent()
+        self.voice_agent = SpeechRecognizerAgent(model_size="base")
+        
+        # Initialize video agent with graceful fallback if OpenCV not available
+        try:
+            self.video_agent = VideoMonitoringAgent()
+        except ImportError as e:
+            print(f"Video monitoring not available: {e}")
+            self.video_agent = None
+        
         self._setup_workflow()
     
     def _setup_workflow(self):
@@ -113,11 +122,12 @@ class ExperimentFlow(FlowCompatibility):
     @start()
     def initialize_experiment(self):
         print("Initializing experiment...")
-        
+
     @weave.op()
     def update_step(self):
         self.state.step_num += 1
         print(f"Step {self.state.step_num} completed.")
+    
     
     # need to add a step prompting method 
 
@@ -450,8 +460,9 @@ class ExperimentFlow(FlowCompatibility):
                 self.monitoring_thread.join(timeout=2.0)
         
         # Stop video monitoring and recording
-        stop_result = self.video_agent.stop_monitoring()
-        print(f"Video monitoring stopped: {stop_result['message']}")
+        if hasattr(self.video_agent, 'is_monitoring') and self.video_agent.is_monitoring:
+            stop_result = self.video_agent.stop_monitoring()
+            print(f"Video monitoring stopped: {stop_result['message']}")
         
         # Get video monitoring summary
         video_summary = self.video_agent.get_event_summary()
@@ -484,7 +495,23 @@ class ExperimentFlow(FlowCompatibility):
     @listen(measure_solvent)
     '''
 
-    
+    @weave.op()
+    def control_lab_instruments(self):
+        self.lab_agent.turn_on("centrifuge")
+        self.lab_agent.turn_on("UV-Vis")
+        print("Lab instruments turned on.")
+
+    @listen(control_lab_instruments)
+    @weave.op()
+    def monitor_safety(self):
+        self.safety_agent.monitor_parameters()
+        if self.safety_agent.is_safe():
+            print("Safety status: Safe")
+        else:
+            self.state.safety_status = "unsafe"
+            self.safety_agent.notify_scientist()
+            print("Safety status: Unsafe! Notifying scientist.")
+
 @weave.op()
 def kickoff():
     experiment_flow = ExperimentFlow()
