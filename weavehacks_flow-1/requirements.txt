@@ -1,0 +1,7 @@
+crewai
+pydantic
+numpy
+matplotlib
+scipy
+requests
+```
