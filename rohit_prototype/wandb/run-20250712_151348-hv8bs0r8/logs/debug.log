@@ -1,5 +1,0 @@
-2025-07-12 15:13:48,160 INFO    ScriptRunner.scriptThread:28084 [wandb_init.py:setup_run_log_directory():703] Logging user logs to /Users/rohitkumar/Documents/hackathon/wandb/run-20250712_151348-hv8bs0r8/logs/debug.log
-2025-07-12 15:13:48,161 INFO    ScriptRunner.scriptThread:28084 [wandb_init.py:setup_run_log_directory():704] Logging internal logs to /Users/rohitkumar/Documents/hackathon/wandb/run-20250712_151348-hv8bs0r8/logs/debug-internal.log
-2025-07-12 15:13:48,161 INFO    ScriptRunner.scriptThread:28084 [wandb_init.py:init():830] calling init triggers
-2025-07-12 15:13:48,161 INFO    ScriptRunner.scriptThread:28084 [wandb_init.py:init():835] wandb.init called with sweep_config: {}
-config: {'_wandb': {}}
