@@ -324,8 +324,20 @@ def display_voice_data_entry():
     "Final nanoparticle mass is 0.08 grams"
     """)
     
-    # Audio input
-    audio_bytes = st.audio_input("🎤 Record your measurement")
+    # Audio input - check for compatibility
+    audio_bytes = None
+    if hasattr(st, 'audio_input'):
+        audio_bytes = st.audio_input("🎤 Record your measurement")
+    else:
+        # Fallback for older Streamlit versions
+        st.info("💡 Using file upload method (Streamlit < 1.37.0)")
+        uploaded_audio = st.file_uploader(
+            "Upload an audio file",
+            type=['wav', 'mp3', 'ogg', 'm4a'],
+            help="Record on your phone/computer and upload the file"
+        )
+        if uploaded_audio:
+            audio_bytes = uploaded_audio
     
     if audio_bytes is not None:
         with st.spinner("Processing audio..."):

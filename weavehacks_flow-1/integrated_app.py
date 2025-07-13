@@ -330,8 +330,34 @@ def display_voice_data_entry():
     "Final nanoparticle mass is 0.08 grams"
     """)
     
-    # Audio input
-    audio_bytes = st.audio_input("🎤 Record your measurement")
+    # Audio input - check for compatibility
+    audio_bytes = None
+    
+    # Method 1: Try to use native audio_input if available (Streamlit >= 1.37.0)
+    if hasattr(st, 'audio_input'):
+        audio_bytes = st.audio_input("🎤 Record your measurement")
+    else:
+        # Method 2: Fallback for older Streamlit versions
+        st.info("💡 Using alternative voice input method")
+        
+        # Option A: File upload
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            st.markdown("**Option 1: Upload Audio File**")
+            audio_file = st.file_uploader(
+                "Choose audio file", 
+                type=['wav', 'mp3', 'ogg', 'm4a', 'webm'],
+                help="Record with your phone or computer, then upload"
+            )
+            if audio_file is not None:
+                audio_bytes = audio_file
+        
+        with col2:
+            st.markdown("**Option 2: Use Microphone**")
+            if st.button("🎤 Open Recorder", help="Opens a popup for recording"):
+                st.info("Microphone recording requires Streamlit 1.37.0+")
+                st.code("pip install --upgrade streamlit>=1.37.0")
     
     if audio_bytes is not None:
         with st.spinner("Processing audio..."):
@@ -687,14 +713,37 @@ def display_ai_assistant():
         with st.expander("🧪 Current Experiment Context"):
             st.code(context)
     
-    # Chat interface
-    for message in st.session_state.messages:
-        if message["role"] != "system":
-            with st.chat_message(message["role"]):
-                st.write(message["content"])
+    # Chat interface - check compatibility
+    if hasattr(st, 'chat_message') and hasattr(st, 'chat_input'):
+        # Modern chat interface (Streamlit >= 1.24.0)
+        for message in st.session_state.messages:
+            if message["role"] != "system":
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
+        
+        # Chat input
+        if prompt := st.chat_input("Ask about your experiment, safety, or protocols..."):
+            process_chat = True
+        else:
+            process_chat = False
+            prompt = None
+    else:
+        # Fallback for older Streamlit versions
+        st.info("💬 Chat interface (using compatibility mode)")
+        
+        # Display messages
+        for message in st.session_state.messages:
+            if message["role"] != "system":
+                if message["role"] == "user":
+                    st.markdown(f"**You:** {message['content']}")
+                else:
+                    st.markdown(f"**Assistant:** {message['content']}")
+        
+        # Text input fallback
+        prompt = st.text_input("Ask a question:", key="chat_input_fallback")
+        process_chat = st.button("Send", key="chat_send_button")
     
-    # Chat input
-    if prompt := st.chat_input("Ask about your experiment, safety, or protocols..."):
+    if process_chat and prompt:
         # Add context about current experiment
         if st.session_state.current_experiment:
             exp = st.session_state.current_experiment
