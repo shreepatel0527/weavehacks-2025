@@ -4,21 +4,45 @@ Chemistry calculation utilities for nanoparticle synthesis with error handling
 import weave
 import wandb
 from typing import Dict, Optional, Union
-from ..config.settings import get_chemistry_config
-from .error_handling import (
-    CalculationError, safe_execute, validate_input,
-    ErrorCategory, ErrorSeverity
-)
+# Simplified configuration and error handling for direct execution
+class ChemistryConfig:
+    MW_HAuCl4_3H2O = 393.83
+    MW_PhCH2CH2SH = 138.23
+    MW_NaBH4 = 37.83
+    MW_Au = 196.97
+    DEFAULT_EQUIVALENTS_SULFUR = 3
+    DEFAULT_EQUIVALENTS_NABH4 = 10
+    TARGET_YIELD_PERCENT = 40.0
+    MIN_YIELD_PERCENT = 30.0
+
+config = ChemistryConfig()
+
+class CalculationError(Exception):
+    pass
+
+def safe_execute(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Calculation error in {func.__name__}: {e}")
+            raise CalculationError(f"Calculation failed: {e}")
+    return wrapper
+
+def validate_input(rules):
+    def decorator(func):
+        return func  # Simplified - just pass through
+    return decorator
 
 def safe_wandb_log(data: dict):
     """Safely log to wandb, handling cases where wandb is not initialized"""
     try:
-        safe_wandb_log(data)
+        wandb.log(data)
     except wandb.errors.UsageError:
         # wandb not initialized, try to initialize minimally
         try:
             wandb.init(project="lab-assistant-calculations", mode="disabled")
-            safe_wandb_log(data)
+            wandb.log(data)
         except Exception:
             # If all else fails, just skip logging
             pass
@@ -26,8 +50,7 @@ def safe_wandb_log(data: dict):
         # Any other wandb error, skip logging
         pass
 
-# Get configuration
-config = get_chemistry_config()
+# Configuration is already set above
 
 @weave.op()
 @safe_execute

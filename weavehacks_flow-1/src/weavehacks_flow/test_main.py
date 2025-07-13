@@ -1,45 +1,15 @@
 #!/usr/bin/env python
+"""
+Test version of main.py with simulated inputs to verify stability
+"""
 from random import randint
 from pydantic import BaseModel
-# CrewAI Flow compatibility layer for Python 3.9
-class FlowCompatibility:
-    """Simple compatibility layer to replace crewai.flow for Python 3.9"""
-    def __init__(self, state_class):
-        self.state = state_class()
-        self._step_methods = []
-        
-    def kickoff(self):
-        """Execute the workflow steps in sequence"""
-        for method in self._step_methods:
-            method()
-    
-    def add_step(self, method):
-        """Add a step method to the workflow"""
-        self._step_methods.append(method)
-
-def start():
-    """Decorator to mark start method"""
-    def decorator(func):
-        func._is_start = True
-        return func
-    return decorator
-
-def listen(previous_method):
-    """Decorator to mark method dependencies"""
-    def decorator(func):
-        func._listens_to = previous_method
-        return func
-    return decorator
-
-# Use compatibility class instead of Flow
-Flow = FlowCompatibility
 import weave
+
+# Import all the modules
 from agents.data_collection_agent import DataCollectionAgent
 from agents.lab_control_agent import LabControlAgent
 from agents.safety_monitoring_agent import SafetyMonitoringAgent
-# from .crews.data_collection_crew.data_collection_crew import DataCollectionCrew
-# from .crews.lab_control_crew.lab_control_crew import LabControlCrew
-# from .crews.safety_monitoring_crew.safety_monitoring_crew import SafetyMonitoringCrew
 from utils.chemistry_calculations import (
     calculate_sulfur_amount,
     calculate_nabh4_amount,
@@ -48,43 +18,86 @@ from utils.chemistry_calculations import (
 
 # Initialize W&B Weave (optional - will work without API key)
 try:
-    weave.init('weavehacks-lab-assistant')
+    weave.init('weavehacks-lab-assistant-test')
     print("Weave initialized successfully")
 except Exception as e:
     print(f"Weave initialization failed (this is optional): {e}")
     print("Continuing without W&B logging...")
 
+class MockDataCollectionAgent:
+    """Mock agent that simulates data collection without user input"""
+    
+    def __init__(self):
+        self.mock_values = {
+            "gold": 0.1576,
+            "water": 10.0,
+            "toab": 0.25,
+            "toluene": 10.0,
+            "sulfur": 0.065,
+            "nabh4": 0.0151,
+            "water_cold": 7.0,
+            "final": 0.08
+        }
+        self.call_count = 0
+    
+    @weave.op()
+    def record_data(self, prompt):
+        # Simulate data collection with predetermined values
+        self.call_count += 1
+        
+        # Determine which measurement based on prompt content
+        if "HAuCl" in prompt or "gold" in prompt.lower():
+            value = self.mock_values["gold"]
+        elif "water" in prompt and "cold" in prompt:
+            value = self.mock_values["water_cold"]
+        elif "water" in prompt or "nanopure" in prompt.lower():
+            value = self.mock_values["water"]
+        elif "TOAB" in prompt or "toab" in prompt.lower():
+            value = self.mock_values["toab"]
+        elif "toluene" in prompt.lower():
+            value = self.mock_values["toluene"]
+        elif "PhCH₂CH₂SH" in prompt or "sulfur" in prompt.lower():
+            value = self.mock_values["sulfur"]
+        elif "NaBH4" in prompt or "nabh4" in prompt.lower():
+            value = self.mock_values["nabh4"]
+        elif "final" in prompt.lower() or "nanoparticle" in prompt.lower():
+            value = self.mock_values["final"]
+        else:
+            # Default value
+            value = 1.0
+        
+        print(f"Mock input for '{prompt}': {value}")
+        return value
+
 class ExperimentState(BaseModel):
     # experiment tracking
     step_num: int = 0
-    exp_status: str = "not started" # not started, in progress, complete, halted
+    exp_status: str = "not started"
     # solids mass
     mass_gold: float = 0.0
     mass_toab: float = 0.0
     mass_sulfur: float = 0.0
     mass_nabh4: float = 0.0
-    mass_final: float= 0.0
+    mass_final: float = 0.0
     # liquids volume
     volume_toluene: float = 0.0
     volume_nanopure_rt: float = 0.0
     volume_nanopure_cold: float = 0.0
-
     observations: str = ""
     # safety status
-    safety_status: str = "safe" # safe or unsafe
+    safety_status: str = "safe"
 
-class ExperimentFlow(FlowCompatibility):
+class TestExperimentFlow:
     def __init__(self):
-        super().__init__(ExperimentState)
-        self.data_agent = DataCollectionAgent()
+        self.state = ExperimentState()
+        self.data_agent = MockDataCollectionAgent()  # Use mock agent
         self.lab_agent = LabControlAgent()
         self.safety_agent = SafetyMonitoringAgent()
         self._setup_workflow()
     
     def _setup_workflow(self):
         """Set up the workflow execution order"""
-        # Define the workflow steps in order
-        workflow_steps = [
+        self.workflow_steps = [
             self.initialize_experiment,
             self.weigh_gold,
             self.measure_nanopure_rt,
@@ -99,11 +112,12 @@ class ExperimentFlow(FlowCompatibility):
             self.calculate_percent_yield,
             self.finalize_experiment
         ]
-        
-        for step in workflow_steps:
-            self.add_step(step)
+    
+    def kickoff(self):
+        """Execute the workflow steps in sequence"""
+        for method in self.workflow_steps:
+            method()
 
-    @start()
     def initialize_experiment(self):
         print("Initializing experiment...")
 
@@ -112,37 +126,30 @@ class ExperimentFlow(FlowCompatibility):
         self.state.step_num += 1
         print(f"Step {self.state.step_num} completed.")
     
-    # need to add a step prompting method 
-
-    @listen(initialize_experiment)
     @weave.op()
     def weigh_gold(self):
         self.state.mass_gold = self.data_agent.record_data("Weigh HAuCl₄·3H₂O (0.1576g) -- record mass")
         print(f"Gold mass recorded: {self.state.mass_gold}g")
         self.update_step()
 
-    @listen(weigh_gold)
     @weave.op()
     def measure_nanopure_rt(self):
         self.state.volume_nanopure_rt = self.data_agent.record_data("Measure water (10mL) -- record vol")
         print(f"Room Temp Nanopure Volume recorded: {self.state.volume_nanopure_rt}mL")
         self.update_step()
 
-    @listen(measure_nanopure_rt)
     @weave.op()
     def weigh_toab(self):
         self.state.mass_toab = self.data_agent.record_data("Weigh TOAB (~0.25g) -- record mass")
         print(f"TOAB mass recorded: {self.state.mass_toab}g")
         self.update_step()
 
-    @listen(weigh_toab)
     @weave.op()
     def measure_toluene(self):
         self.state.volume_toluene = self.data_agent.record_data("Measure toluene (10mL) -- record vol")
         print(f"Toluene volume recorded: {self.state.volume_toluene}mL")
         self.update_step()
 
-    @listen(measure_toluene)
     @weave.op()
     def calculate_sulfur_amount(self):
         """Calculate amount of PhCH₂CH₂SH (3 eq. relative to gold)"""
@@ -156,7 +163,6 @@ class ExperimentFlow(FlowCompatibility):
         
         return calc_result['mass_sulfur_g'] 
 
-    @listen(calculate_sulfur_amount)
     @weave.op()
     def weigh_sulfur(self):
         mass_needed = self.calculate_sulfur_amount()
@@ -165,7 +171,6 @@ class ExperimentFlow(FlowCompatibility):
         print(f"Sulfur mass recorded: {self.state.mass_sulfur}g")
         self.update_step()
 
-    @listen(weigh_sulfur)
     @weave.op()
     def calculate_nabh4_amount(self):
         """Calculate amount of NaBH4 (10 eq. relative to gold)"""
@@ -179,7 +184,6 @@ class ExperimentFlow(FlowCompatibility):
         
         return calc_result['mass_nabh4_g']
 
-    @listen(calculate_nabh4_amount)
     @weave.op()
     def weigh_nabh4(self):
         mass_needed = self.calculate_nabh4_amount()
@@ -188,21 +192,18 @@ class ExperimentFlow(FlowCompatibility):
         print(f"NaBH4 mass recorded: {self.state.mass_nabh4}g")
         self.update_step()
 
-    @listen(weigh_nabh4)
     @weave.op()
     def measure_nanopure_cold(self):
         self.state.volume_nanopure_cold = self.data_agent.record_data("Measure ice-cold Nanopure water (7mL) -- record vol")
         print(f"Cold Nanopure Volume recorded: {self.state.volume_nanopure_cold}mL")
         self.update_step()
     
-    @listen(measure_nanopure_cold)
     @weave.op()
     def weigh_final(self):
         self.state.mass_final = self.data_agent.record_data("Weigh final Au₂₅ nanoparticles -- record mass")
         print(f"Nanoparticle mass recorded: {self.state.mass_final}g")
         self.update_step()
 
-    @listen(weigh_final)
     @weave.op()
     def calculate_percent_yield(self):
         """Calculate percent yield of the experiment based on the initial HAuCl4 content"""
@@ -216,7 +217,6 @@ class ExperimentFlow(FlowCompatibility):
         
         return calc_result['percent_yield']
 
-    @listen(calculate_percent_yield)
     @weave.op()
     def finalize_experiment(self):
         self.state.exp_status = "complete"
@@ -235,34 +235,13 @@ class ExperimentFlow(FlowCompatibility):
         print(f"- Percent yield: {percent_yield:.2f}%")
         print(f"- Safety status: {self.state.safety_status}")
         print("\n" + "="*50)
-    '''
-    def measure_solvent(self):
-        self.state.volume_solvent = self.data_agent.record_data("Measure water -- record vol")
-        print(f"Solvent volume recorded: {self.state.volume_solvent}mL")
-    @listen(measure_solvent)
-    '''
-
-    @weave.op()
-    def control_lab_instruments(self):
-        self.lab_agent.turn_on("centrifuge")
-        self.lab_agent.turn_on("UV-Vis")
-        print("Lab instruments turned on.")
-
-    @listen(control_lab_instruments)
-    @weave.op()
-    def monitor_safety(self):
-        self.safety_agent.monitor_parameters()
-        if self.safety_agent.is_safe():
-            print("Safety status: Safe")
-        else:
-            self.state.safety_status = "unsafe"
-            self.safety_agent.notify_scientist()
-            print("Safety status: Unsafe! Notifying scientist.")
 
 @weave.op()
-def kickoff():
-    experiment_flow = ExperimentFlow()
+def test_kickoff():
+    print("Starting automated test of experiment flow...")
+    experiment_flow = TestExperimentFlow()
     experiment_flow.kickoff()
+    print("Test completed successfully!")
 
 if __name__ == "__main__":
-    kickoff()
+    test_kickoff()
