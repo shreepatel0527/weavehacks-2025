@@ -20,12 +20,26 @@ def safe_wandb_log(data: dict):
 class LabControlAgent:
     def __init__(self):
         self.instruments = {}
+        self.alert_mode = False
+        self.emergency_shutdown_active = False
 
     @weave.op()
     def turn_on(self, instrument_name):
+        if self.emergency_shutdown_active:
+            print(f"Cannot turn on {instrument_name}: Emergency shutdown active")
+            return False
+            
         self.instruments[instrument_name] = True
-        print(f"{instrument_name} turned on.")
+        
+        # Check for special monitoring instruments
+        if instrument_name in ["emergency_monitoring", "safety_systems"]:
+            self.alert_mode = True
+            print(f"Lab control agent: {instrument_name} activated - Alert mode enabled")
+        else:
+            print(f"{instrument_name} turned on.")
+            
         safe_wandb_log({'instrument_control': {'action': 'turn_on', 'instrument': instrument_name}})
+        return True
 
     @weave.op()
     def turn_off(self, instrument_name):
@@ -33,11 +47,56 @@ class LabControlAgent:
             self.instruments[instrument_name] = False
             print(f"{instrument_name} turned off.")
             safe_wandb_log({'instrument_control': {'action': 'turn_off', 'instrument': instrument_name}})
+            return True
         else:
             print(f"{instrument_name} is not currently on.")
+            return False
 
     @weave.op()
     def is_on(self, instrument_name):
         status = self.instruments.get(instrument_name, False)
         safe_wandb_log({'instrument_status': {'instrument': instrument_name, 'is_on': status}})
         return status
+    
+    @weave.op()
+    def emergency_shutdown_all(self):
+        """Emergency shutdown of all lab instruments"""
+        self.emergency_shutdown_active = True
+        shutdown_count = 0
+        
+        print("\n🚨 INITIATING EMERGENCY SHUTDOWN OF ALL INSTRUMENTS 🚨")
+        
+        # Turn off all instruments
+        for instrument_name in list(self.instruments.keys()):
+            if self.instruments[instrument_name]:  # Only turn off if currently on
+                self.instruments[instrument_name] = False
+                print(f"✓ Emergency shutdown: {instrument_name}")
+                shutdown_count += 1
+        
+        # Log emergency shutdown
+        safe_wandb_log({
+            'emergency_shutdown': {
+                'instruments_shutdown': shutdown_count,
+                'timestamp': 'emergency_active'
+            }
+        })
+        
+        print(f"Emergency shutdown complete: {shutdown_count} instruments turned off")
+        return shutdown_count
+    
+    @weave.op()
+    def reset_emergency_mode(self):
+        """Reset emergency shutdown mode (for testing/recovery)"""
+        self.emergency_shutdown_active = False
+        self.alert_mode = False
+        print("Emergency mode reset - Normal operations can resume")
+        safe_wandb_log({'lab_control': {'action': 'emergency_reset'}})
+    
+    def get_status(self):
+        """Get current status of lab control agent"""
+        return {
+            'alert_mode': self.alert_mode,
+            'emergency_shutdown_active': self.emergency_shutdown_active,
+            'active_instruments': {k: v for k, v in self.instruments.items() if v},
+            'total_instruments': len(self.instruments)
+        }
