@@ -1,0 +1,36 @@
+# Safe minimal requirements - guaranteed to install without issues
+# These are the absolute essentials that work on Python 3.9
+
+# Core Python packages
+pydantic==1.10.14
+numpy==1.24.4
+requests==2.31.0
+
+# Data processing
+pandas==1.5.3
+
+# Basic plotting (matplotlib can have issues, skip if needed)
+# matplotlib==3.7.5
+
+# Chemistry calculations
+scipy==1.10.1
+
+# Web UI (only if using the UI)
+streamlit==1.32.2
+plotly==5.20.0
+
+# Audio (lightweight, no issues)
+sounddevice==0.4.6
+soundfile==0.12.1
+
+# Testing
+pytest==8.0.2
+
+# Environment variables
+python-dotenv==1.0.1
+
+# That's it! This should install in under a minute.
+# 
+# After this installs successfully, you can try adding:
+# pip3 install --user opencv-python==4.8.1.78  # For video
+# pip3 install --user fastapi==0.111.0 uvicorn==0.29.0  # For backend API

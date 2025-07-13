@@ -12,32 +12,15 @@ import uvicorn
 import logging
 import asyncio
 from datetime import datetime
+import weave
+from sensor_simulator import sensor_simulator, SensorType
 
-# Try to import weave, but make it optional
+# Initialize Weave for observability
 try:
-    import weave
-    WEAVE_AVAILABLE = True
     weave.init('weavehacks-lab-backend')
     print("Weave initialized for backend tracking")
 except Exception as e:
-    WEAVE_AVAILABLE = False
-    print(f"Weave not available (optional): {e}")
-
-# Decorator for optional weave
-def weave_op():
-    def decorator(func):
-        if WEAVE_AVAILABLE:
-            return weave.op()(func)
-        return func
-    return decorator
-
-# Try to import sensor simulator
-try:
-    from sensor_simulator import sensor_simulator, SensorType
-    SENSOR_SIM_AVAILABLE = True
-except ImportError:
-    SENSOR_SIM_AVAILABLE = False
-    print("Sensor simulator not available")
+    print(f"Weave init failed (optional): {e}")
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -120,7 +103,7 @@ async def health_check():
 
 # Experiment Management
 @app.post("/experiments", response_model=ExperimentState)
-@weave_op()
+@weave.op()
 async def create_experiment(experiment_id: str):
     """Create a new experiment"""
     if experiment_id in experiments:
@@ -145,7 +128,7 @@ async def list_experiments():
     return list(experiments.values())
 
 @app.put("/experiments/{experiment_id}/status")
-@weave_op()
+@weave.op()
 async def update_experiment_status(experiment_id: str, status: str):
     """Update experiment status"""
     if experiment_id not in experiments:
@@ -159,262 +142,255 @@ async def update_experiment_status(experiment_id: str, status: str):
 
 # Data Collection
 @app.post("/data", response_model=DataEntry)
-@weave_op()
+@weave.op()
 async def record_data(data: DataEntry):
     """Record experimental data"""
     if data.experiment_id not in experiments:
         raise HTTPException(status_code=404, detail="Experiment not found")
     
-    # Update experiment state
-    exp = experiments[data.experiment_id]
-    if data.data_type == "mass":
-        if "gold" in data.compound.lower():
-            exp.mass_gold = data.value
-        elif "toab" in data.compound.lower():
-            exp.mass_toab = data.value
-        elif "sulfur" in data.compound.lower() or "phch" in data.compound.lower():
-            exp.mass_sulfur = data.value
-        elif "nabh4" in data.compound.lower():
-            exp.mass_nabh4 = data.value
-        elif "final" in data.compound.lower() or "au25" in data.compound.lower():
-            exp.mass_final = data.value
-    elif data.data_type == "volume":
-        if "toluene" in data.compound.lower():
-            exp.volume_toluene = data.value
-        elif "cold" in data.compound.lower():
-            exp.volume_nanopure_cold = data.value
-        else:
-            exp.volume_nanopure_rt = data.value
-    
-    exp.updated_at = datetime.now()
     data_entries.append(data)
     
-    logger.info(f"Recorded {data.data_type} data for {data.compound}: {data.value} {data.units}")
+    # Update experiment state based on data type
+    experiment = experiments[data.experiment_id]
+    experiment.updated_at = datetime.now()
+    
+    # Map data to experiment fields
+    if data.compound.lower().contains("gold") or "haucl4" in data.compound.lower():
+        experiment.mass_gold = data.value
+    elif data.compound.lower().contains("toab"):
+        experiment.mass_toab = data.value
+    elif data.compound.lower().contains("sulfur") or "phch2ch2sh" in data.compound.lower():
+        experiment.mass_sulfur = data.value
+    elif data.compound.lower().contains("nabh4"):
+        experiment.mass_nabh4 = data.value
+    elif data.compound.lower().contains("final") or "nanoparticle" in data.compound.lower():
+        experiment.mass_final = data.value
+    elif data.compound.lower().contains("toluene"):
+        experiment.volume_toluene = data.value
+    elif "nanopure" in data.compound.lower() and "cold" in data.compound.lower():
+        experiment.volume_nanopure_cold = data.value
+    elif "nanopure" in data.compound.lower():
+        experiment.volume_nanopure_rt = data.value
+    
+    logger.info(f"Recorded data for {data.experiment_id}: {data.compound} = {data.value} {data.units}")
     return data
 
-@app.get("/data/{experiment_id}", response_model=List[DataEntry])
+@app.get("/experiments/{experiment_id}/data", response_model=List[DataEntry])
 async def get_experiment_data(experiment_id: str):
     """Get all data for an experiment"""
-    return [d for d in data_entries if d.experiment_id == experiment_id]
+    return [entry for entry in data_entries if entry.experiment_id == experiment_id]
+
+# Safety Monitoring
+@app.post("/safety/alert", response_model=SafetyAlert)
+@weave.op()
+async def create_safety_alert(alert: SafetyAlert):
+    """Create a safety alert"""
+    safety_alerts.append(alert)
+    
+    # Update experiment safety status if critical
+    if alert.severity == "critical" and alert.experiment_id in experiments:
+        experiments[alert.experiment_id].safety_status = "unsafe"
+        experiments[alert.experiment_id].updated_at = datetime.now()
+    
+    logger.warning(f"Safety alert for {alert.experiment_id}: {alert.parameter} = {alert.value} (threshold: {alert.threshold})")
+    return alert
+
+@app.get("/safety/alerts", response_model=List[SafetyAlert])
+async def get_safety_alerts():
+    """Get all safety alerts"""
+    return safety_alerts
+
+@app.get("/experiments/{experiment_id}/safety", response_model=List[SafetyAlert])
+async def get_experiment_safety_alerts(experiment_id: str):
+    """Get safety alerts for an experiment"""
+    return [alert for alert in safety_alerts if alert.experiment_id == experiment_id]
+
+# Agent Management
+@app.post("/agents", response_model=AgentStatus)
+@weave.op()
+async def register_agent(agent: AgentStatus):
+    """Register an agent"""
+    agent_statuses[agent.agent_id] = agent
+    logger.info(f"Registered agent: {agent.agent_id} ({agent.agent_type})")
+    return agent
+
+@app.get("/agents", response_model=List[AgentStatus])
+async def get_agents():
+    """Get all agent statuses"""
+    return list(agent_statuses.values())
+
+@app.put("/agents/{agent_id}/status")
+@weave.op()
+async def update_agent_status(agent_id: str, status: str, current_task: Optional[str] = None):
+    """Update agent status"""
+    if agent_id not in agent_statuses:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    
+    agent_statuses[agent_id].status = status
+    if current_task:
+        agent_statuses[agent_id].current_task = current_task
+    agent_statuses[agent_id].last_updated = datetime.now()
+    
+    return {"message": "Agent status updated", "agent_id": agent_id, "status": status}
 
 # Chemistry Calculations
-@app.post("/calculations/sulfur_amount")
-@weave_op()
+@app.post("/calculations/sulfur-amount")
+@weave.op()
 async def calculate_sulfur_amount(experiment_id: str, gold_mass: float):
-    """Calculate amount of sulfur compound needed"""
-    # Constants
-    MW_HAuCl4_3H2O = 393.83
-    MW_PhCH2CH2SH = 138.23
-    equivalents = 3
+    """Calculate required sulfur amount (3 eq. relative to gold)"""
+    # HAuCl4·3H2O molecular weight: 393.83 g/mol
+    # PhCH2CH2SH molecular weight: 138.21 g/mol
     
-    moles_gold = gold_mass / MW_HAuCl4_3H2O
-    moles_sulfur = moles_gold * equivalents
-    mass_sulfur = moles_sulfur * MW_PhCH2CH2SH
+    mw_haucl4_3h2o = 393.83
+    mw_sulfur = 138.21
+    
+    moles_gold = gold_mass / mw_haucl4_3h2o
+    moles_sulfur_needed = moles_gold * 3  # 3 equivalents
+    mass_sulfur_needed = moles_sulfur_needed * mw_sulfur
     
     result = {
-        "moles_gold": round(moles_gold, 6),
-        "moles_sulfur": round(moles_sulfur, 6),
-        "mass_sulfur_g": round(mass_sulfur, 4),
-        "equivalents": equivalents
+        "experiment_id": experiment_id,
+        "gold_mass_g": gold_mass,
+        "moles_gold": moles_gold,
+        "moles_sulfur_needed": moles_sulfur_needed,
+        "mass_sulfur_needed_g": mass_sulfur_needed,
+        "calculation_type": "sulfur_amount"
     }
     
-    logger.info(f"Calculated sulfur amount for {experiment_id}: {mass_sulfur:.4f}g")
+    logger.info(f"Calculated sulfur amount for {experiment_id}: {mass_sulfur_needed:.4f}g")
     return result
 
-@app.post("/calculations/nabh4_amount")
-@weave_op()
+@app.post("/calculations/nabh4-amount")
+@weave.op()
 async def calculate_nabh4_amount(experiment_id: str, gold_mass: float):
-    """Calculate amount of NaBH4 needed"""
-    # Constants
-    MW_HAuCl4_3H2O = 393.83
-    MW_NaBH4 = 37.83
-    equivalents = 10
+    """Calculate required NaBH4 amount (10 eq. relative to gold)"""
+    # HAuCl4·3H2O molecular weight: 393.83 g/mol
+    # NaBH4 molecular weight: 37.83 g/mol
     
-    moles_gold = gold_mass / MW_HAuCl4_3H2O
-    moles_nabh4 = moles_gold * equivalents
-    mass_nabh4 = moles_nabh4 * MW_NaBH4
+    mw_haucl4_3h2o = 393.83
+    mw_nabh4 = 37.83
+    
+    moles_gold = gold_mass / mw_haucl4_3h2o
+    moles_nabh4_needed = moles_gold * 10  # 10 equivalents
+    mass_nabh4_needed = moles_nabh4_needed * mw_nabh4
     
     result = {
-        "moles_gold": round(moles_gold, 6),
-        "moles_nabh4": round(moles_nabh4, 6),
-        "mass_nabh4_g": round(mass_nabh4, 4),
-        "equivalents": equivalents
+        "experiment_id": experiment_id,
+        "gold_mass_g": gold_mass,
+        "moles_gold": moles_gold,
+        "moles_nabh4_needed": moles_nabh4_needed,
+        "mass_nabh4_needed_g": mass_nabh4_needed,
+        "calculation_type": "nabh4_amount"
     }
     
-    logger.info(f"Calculated NaBH4 amount for {experiment_id}: {mass_nabh4:.4f}g")
+    logger.info(f"Calculated NaBH4 amount for {experiment_id}: {mass_nabh4_needed:.4f}g")
     return result
 
-@app.post("/calculations/percent_yield")
-@weave_op()
-async def calculate_percent_yield(experiment_id: str, gold_mass: float, actual_yield: float):
-    """Calculate percent yield"""
-    # Constants
-    MW_HAuCl4_3H2O = 393.83
-    MW_Au = 196.97
+@app.post("/calculations/percent-yield")
+@weave.op()
+async def calculate_percent_yield(experiment_id: str, gold_mass: float, final_mass: float):
+    """Calculate percent yield of the experiment"""
+    # Assume theoretical yield equals gold content in starting material
+    # HAuCl4·3H2O contains Au (atomic weight 196.97)
+    # HAuCl4·3H2O molecular weight: 393.83 g/mol
     
-    # Calculate theoretical yield
-    gold_fraction = MW_Au / MW_HAuCl4_3H2O
-    theoretical_gold_mass = gold_mass * gold_fraction
+    mw_haucl4_3h2o = 393.83
+    mw_gold = 196.97
     
-    # For Au25 clusters, account for ligands (~30% by mass)
-    ligand_fraction = 0.3
-    theoretical_yield = theoretical_gold_mass / (1 - ligand_fraction)
+    moles_starting = gold_mass / mw_haucl4_3h2o
+    theoretical_gold_mass = moles_starting * mw_gold
     
-    # Calculate percent yield
-    percent_yield = (actual_yield / theoretical_yield) * 100 if theoretical_yield > 0 else 0
+    percent_yield = (final_mass / theoretical_gold_mass) * 100 if theoretical_gold_mass > 0 else 0
     
     result = {
-        "starting_mass_g": round(gold_mass, 4),
-        "gold_content_g": round(theoretical_gold_mass, 4),
-        "theoretical_yield_g": round(theoretical_yield, 4),
-        "actual_yield_g": round(actual_yield, 4),
-        "percent_yield": round(percent_yield, 2)
+        "experiment_id": experiment_id,
+        "starting_mass_g": gold_mass,
+        "theoretical_gold_mass_g": theoretical_gold_mass,
+        "actual_yield_g": final_mass,
+        "percent_yield": percent_yield,
+        "calculation_type": "percent_yield"
     }
     
     logger.info(f"Calculated percent yield for {experiment_id}: {percent_yield:.2f}%")
     return result
 
-# Safety Monitoring
-@app.post("/safety/alert")
-@weave_op()
-async def record_safety_alert(alert: SafetyAlert):
-    """Record a safety alert"""
-    if alert.experiment_id not in experiments:
-        raise HTTPException(status_code=404, detail="Experiment not found")
+# Sensor Data Endpoints
+@app.post("/sensors/start-experiment")
+@weave.op()
+async def start_sensor_experiment(experiment_type: str, experiment_id: str):
+    """Start sensor simulation for an experiment"""
+    success, message = sensor_simulator.start_experiment(experiment_type, experiment_id)
     
-    safety_alerts.append(alert)
-    
-    # Update experiment safety status
-    if alert.severity == "critical":
-        experiments[alert.experiment_id].safety_status = "critical"
-    elif alert.severity == "warning" and experiments[alert.experiment_id].safety_status == "safe":
-        experiments[alert.experiment_id].safety_status = "warning"
-    
-    logger.warning(f"Safety alert for {alert.experiment_id}: {alert.parameter} = {alert.value} ({alert.severity})")
-    return {"message": "Alert recorded", "alert_id": len(safety_alerts)}
-
-@app.get("/safety/{experiment_id}/alerts", response_model=List[SafetyAlert])
-async def get_safety_alerts(experiment_id: str):
-    """Get safety alerts for an experiment"""
-    return [a for a in safety_alerts if a.experiment_id == experiment_id]
-
-# Sensor Simulation (if available)
-if SENSOR_SIM_AVAILABLE:
-    @app.post("/sensors/{experiment_id}/start")
-    async def start_sensors(experiment_id: str, background_tasks: BackgroundTasks):
-        """Start sensor monitoring for an experiment"""
-        if experiment_id not in experiments:
-            raise HTTPException(status_code=404, detail="Experiment not found")
-        
-        background_tasks.add_task(monitor_sensors, experiment_id)
-        return {"message": "Sensor monitoring started"}
-
-    async def monitor_sensors(experiment_id: str):
-        """Background task to monitor sensors"""
-        while experiment_id in experiments and experiments[experiment_id].status == "in_progress":
-            readings = sensor_simulator.get_all_readings()
-            
-            for sensor_type, reading in readings.items():
-                if reading.status == "critical":
-                    alert = SafetyAlert(
-                        experiment_id=experiment_id,
-                        parameter=sensor_type.value,
-                        value=reading.value,
-                        threshold=reading.threshold,
-                        severity="critical"
-                    )
-                    await record_safety_alert(alert)
-            
-            await asyncio.sleep(5)  # Check every 5 seconds
-
-# Agent Status
-@app.put("/agents/{agent_id}/status")
-async def update_agent_status(agent_id: str, status: AgentStatus):
-    """Update agent status"""
-    agent_statuses[agent_id] = status
-    logger.info(f"Updated agent {agent_id} status: {status.status}")
-    return {"message": "Agent status updated"}
-
-@app.get("/agents", response_model=List[AgentStatus])
-async def get_all_agents():
-    """Get status of all agents"""
-    return list(agent_statuses.values())
-
-# Voice Data Entry Support
-@app.post("/voice/transcribe")
-@weave_op()
-async def transcribe_voice(experiment_id: str, audio_text: str):
-    """Process transcribed voice input"""
-    # Simple parsing logic - in production, use NLP
-    lower_text = audio_text.lower()
-    
-    # Try to extract numerical value
-    import re
-    numbers = re.findall(r'\d+\.?\d*', audio_text)
-    if not numbers:
-        return {"success": False, "message": "No numerical value found"}
-    
-    value = float(numbers[0])
-    
-    # Determine what was measured
-    if any(word in lower_text for word in ["gold", "haucl"]):
-        data = DataEntry(
-            experiment_id=experiment_id,
-            data_type="mass",
-            compound="HAuCl₄·3H₂O",
-            value=value,
-            units="g"
-        )
-    elif "toab" in lower_text:
-        data = DataEntry(
-            experiment_id=experiment_id,
-            data_type="mass",
-            compound="TOAB",
-            value=value,
-            units="g"
-        )
-    elif any(word in lower_text for word in ["water", "nanopure"]):
-        data = DataEntry(
-            experiment_id=experiment_id,
-            data_type="volume",
-            compound="nanopure water",
-            value=value,
-            units="mL"
-        )
-    elif "toluene" in lower_text:
-        data = DataEntry(
-            experiment_id=experiment_id,
-            data_type="volume",
-            compound="toluene",
-            value=value,
-            units="mL"
-        )
+    if success:
+        logger.info(f"Started sensor simulation for {experiment_id}: {experiment_type}")
+        return {"success": True, "message": message}
     else:
-        return {"success": False, "message": "Could not determine measurement type"}
+        logger.error(f"Failed to start sensor simulation: {message}")
+        raise HTTPException(status_code=400, detail=message)
+
+@app.get("/sensors/readings")
+async def get_sensor_readings(count: int = 50):
+    """Get recent sensor readings"""
+    readings = sensor_simulator.get_recent_readings(count)
+    return {"readings": readings, "count": len(readings)}
+
+@app.get("/sensors/status")
+async def get_sensor_status():
+    """Get sensor system status"""
+    experiment_status = sensor_simulator.get_experiment_status()
+    recent_readings = sensor_simulator.get_recent_readings(10)
     
-    result = await record_data(data)
-    return {"success": True, "data": result}
+    # Check for safety alerts
+    from sensor_simulator import SensorReading, SensorType
+    reading_objects = []
+    for r in recent_readings:
+        reading_objects.append(SensorReading(
+            sensor_id=r["sensor_id"],
+            sensor_type=SensorType(r["sensor_type"]),
+            value=r["value"],
+            units=r["units"],
+            timestamp=datetime.fromisoformat(r["timestamp"]),
+            location=r["location"],
+            experiment_id=r.get("experiment_id")
+        ))
+    
+    safety_alerts = sensor_simulator.check_safety_thresholds(reading_objects)
+    
+    return {
+        "experiment": experiment_status,
+        "recent_readings": recent_readings,
+        "safety_alerts": safety_alerts,
+        "sensor_count": len(sensor_simulator.sensors),
+        "simulation_active": sensor_simulator.is_running
+    }
 
-# Experiment Types (if sensor sim available)
-if SENSOR_SIM_AVAILABLE:
-    @app.get("/experiment-types")
-    async def get_experiment_types():
-        """Get available experiment types"""
-        return {
-            "types": {
-                name: {
-                    "description": f"{name.replace('_', ' ').title()} synthesis",
-                    "temperature_range": profile.temp_range,
-                    "pressure_range": profile.pressure_range,
-                    "duration_hours": profile.duration_hours
-                }
-                for name, profile in sensor_simulator.experiment_profiles.items()
+@app.post("/sensors/stop")
+@weave.op()
+async def stop_sensor_simulation():
+    """Stop sensor simulation"""
+    sensor_simulator.stop_simulation()
+    logger.info("Stopped sensor simulation")
+    return {"message": "Sensor simulation stopped"}
+
+@app.get("/sensors/experiment-types")
+async def get_experiment_types():
+    """Get available experiment types for sensor simulation"""
+    return {
+        "experiment_types": list(sensor_simulator.experiment_profiles.keys()),
+        "profiles": {
+            name: {
+                "name": profile.name,
+                "temperature_range": profile.temp_range,
+                "pressure_range": profile.pressure_range,
+                "duration_hours": profile.duration_hours
             }
+            for name, profile in sensor_simulator.experiment_profiles.items()
         }
+    }
 
-# Step Management Endpoints (NEW)
+# Step Management Endpoints
 @app.put("/experiments/{experiment_id}/step")
-@weave_op()
+@weave.op()
 async def update_experiment_step(experiment_id: str, step_data: dict):
     """Update experiment step number"""
     if experiment_id not in experiments:
@@ -428,7 +404,7 @@ async def update_experiment_step(experiment_id: str, step_data: dict):
     return {"message": "Step updated", "step_num": step_num}
 
 @app.post("/experiments/{experiment_id}/steps/complete")
-@weave_op()
+@weave.op()
 async def complete_experiment_step(experiment_id: str, step_info: dict):
     """Mark a step as completed"""
     if experiment_id not in experiments:
@@ -449,7 +425,7 @@ async def complete_experiment_step(experiment_id: str, step_info: dict):
     return {"message": "Step marked as complete", "completion": completion_data}
 
 @app.post("/experiments/{experiment_id}/steps/note")
-@weave_op()
+@weave.op()
 async def add_step_note(experiment_id: str, note_data: dict):
     """Add a note to a specific step"""
     if experiment_id not in experiments:
@@ -470,7 +446,7 @@ async def add_step_note(experiment_id: str, note_data: dict):
     return {"message": "Note saved", "note": note_entry}
 
 @app.put("/experiments/{experiment_id}/observations")
-@weave_op()
+@weave.op()
 async def update_experiment_observations(experiment_id: str, obs_data: dict):
     """Update experiment qualitative observations"""
     if experiment_id not in experiments:
@@ -646,8 +622,9 @@ async def export_experiment_report(experiment_id: str):
     percent_yield = "N/A"
     if exp.mass_gold > 0 and exp.mass_final > 0:
         try:
-            result = await calculate_percent_yield(experiment_id, exp.mass_gold, exp.mass_final)
-            percent_yield = f"{result['percent_yield']:.2f}%"
+            success, result = await calculate_percent_yield(experiment_id, exp.mass_gold, exp.mass_final)
+            if success:
+                percent_yield = f"{result['percent_yield']:.2f}%"
         except:
             percent_yield = "Calculation Error"
     
@@ -691,8 +668,7 @@ async def websocket_info():
     return {"message": "WebSocket endpoint for real-time updates", "endpoint": "/ws"}
 
 if __name__ == "__main__":
-    # Start sensor simulation by default if available
-    if SENSOR_SIM_AVAILABLE:
-        sensor_simulator.start_simulation()
+    # Start sensor simulation by default
+    sensor_simulator.start_simulation()
     
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

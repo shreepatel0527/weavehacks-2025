@@ -1,0 +1,37 @@
+# Minimal requirements for WeaveHacks Flow
+# Use this if requirements_fixed.txt still has issues
+
+# Core framework - skip CrewAI for now as it has complex dependencies
+pydantic>=1.10.0,<2.0.0
+
+# Scientific computing essentials
+numpy==1.24.4
+matplotlib==3.7.5
+scipy==1.10.1
+
+# Basic utilities
+requests==2.31.0
+python-dotenv==1.0.1
+
+# Weights & Biases (optional, can comment out)
+# wandb==0.16.6
+# weave==0.50.0
+
+# Audio (optional, can comment out if not using voice)
+sounddevice==0.4.6
+soundfile==0.12.1
+
+# UI (optional, only if using integrated_app.py)
+streamlit==1.32.2
+pandas==1.5.3
+plotly==5.20.0
+
+# Testing
+pytest==8.0.2
+
+# Computer vision (optional, can comment out if not using video)
+# opencv-python==4.8.1.78
+
+# Backend API (optional, only if running backend)
+fastapi==0.111.0
+uvicorn==0.29.0

@@ -49,18 +49,12 @@ class IntegratedLabPlatform:
     def create_experiment(self, experiment_id: str):
         """Create a new experiment via API"""
         try:
-            # The API expects experiment_id as a query parameter based on the backend code
-            response = requests.post(f"{self.api_base}/experiments?experiment_id={experiment_id}")
+            response = requests.post(f"{self.api_base}/experiments", 
+                                   params={"experiment_id": experiment_id})
             if response.status_code == 200:
                 return True, response.json()
             else:
-                # Get more details about the error
-                error_detail = ""
-                try:
-                    error_detail = response.json().get('detail', '')
-                except:
-                    error_detail = response.text
-                return False, f"API Error {response.status_code}: {error_detail}"
+                return False, f"API Error: {response.status_code}"
         except Exception as e:
             return False, f"Connection Error: {str(e)}"
     
@@ -273,10 +267,10 @@ def display_experiment_dashboard():
             if st.button("Calculate Sulfur Amount"):
                 if exp['mass_gold'] > 0:
                     success, result = platform.calculate_chemistry(
-                        "sulfur_amount", exp['experiment_id'], gold_mass=exp['mass_gold']
+                        "sulfur-amount", exp['experiment_id'], gold_mass=exp['mass_gold']
                     )
                     if success:
-                        st.success(f"Sulfur needed: {result.get('mass_sulfur_g', 0):.4f}g")
+                        st.success(f"Sulfur needed: {result['mass_sulfur_needed_g']:.4f}g")
                     else:
                         st.error(f"Calculation failed: {result}")
                 else:
@@ -286,10 +280,10 @@ def display_experiment_dashboard():
             if st.button("Calculate NaBH4 Amount"):
                 if exp['mass_gold'] > 0:
                     success, result = platform.calculate_chemistry(
-                        "nabh4_amount", exp['experiment_id'], gold_mass=exp['mass_gold']
+                        "nabh4-amount", exp['experiment_id'], gold_mass=exp['mass_gold']
                     )
                     if success:
-                        st.success(f"NaBH4 needed: {result.get('mass_nabh4_g', 0):.4f}g")
+                        st.success(f"NaBH4 needed: {result['mass_nabh4_needed_g']:.4f}g")
                     else:
                         st.error(f"Calculation failed: {result}")
                 else:
@@ -299,8 +293,8 @@ def display_experiment_dashboard():
             if st.button("Calculate Percent Yield"):
                 if exp['mass_gold'] > 0 and exp['mass_final'] > 0:
                     success, result = platform.calculate_chemistry(
-                        "percent_yield", exp['experiment_id'], 
-                        gold_mass=exp['mass_gold'], actual_yield=exp['mass_final']
+                        "percent-yield", exp['experiment_id'], 
+                        gold_mass=exp['mass_gold'], final_mass=exp['mass_final']
                     )
                     if success:
                         st.success(f"Percent yield: {result['percent_yield']:.2f}%")
