@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 from random import randint
 import weave
+import wandb
 from pathlib import Path
 
 class SafetyMonitoringAgent:
@@ -109,7 +110,7 @@ class SafetyMonitoringAgent:
             self.current_oxygen = self.get_oxygen()
         
         # Log to W&B
-        weave.log({
+        wandb.log({
             'safety_monitoring': {
                 'temperature': self.current_temperature,
                 'pressure': self.current_pressure,
@@ -153,7 +154,7 @@ class SafetyMonitoringAgent:
         all_safe = temp_safe and pressure_safe and nitrogen_safe and oxygen_safe
         
         # Log safety status
-        weave.log({
+        wandb.log({
             'safety_check': {
                 'temperature_safe': temp_safe,
                 'pressure_safe': pressure_safe,
@@ -215,7 +216,7 @@ class SafetyMonitoringAgent:
         print("="*50 + "\n")
         
         # Log alert to W&B
-        weave.log({
+        wandb.log({
             'safety_alert': {
                 'timestamp': datetime.now().isoformat(),
                 'temperature': self.current_temperature,

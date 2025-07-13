@@ -24,7 +24,7 @@ class TestDataCollectionAgent(unittest.TestCase):
         self.agent = DataCollectionAgent()
     
     @patch('builtins.input', return_value='0.1576')
-    @patch('weave.log')
+    @patch('wandb.log')
     def test_record_data(self, mock_log, mock_input):
         """Test data recording functionality"""
         result = self.agent.record_data("Enter mass")
@@ -32,7 +32,7 @@ class TestDataCollectionAgent(unittest.TestCase):
         mock_log.assert_called_once()
     
     @patch('builtins.input', return_value='Gold chloride')
-    @patch('weave.log')
+    @patch('wandb.log')
     def test_clarify_reagent(self, mock_log, mock_input):
         """Test reagent clarification"""
         result = self.agent.clarify_reagent()
@@ -43,14 +43,14 @@ class TestLabControlAgent(unittest.TestCase):
     def setUp(self):
         self.agent = LabControlAgent()
     
-    @patch('weave.log')
+    @patch('wandb.log')
     def test_turn_on_instrument(self, mock_log):
         """Test turning on instruments"""
         self.agent.turn_on("centrifuge")
         self.assertTrue(self.agent.is_on("centrifuge"))
         self.assertEqual(mock_log.call_count, 2)  # turn_on and is_on
     
-    @patch('weave.log')
+    @patch('wandb.log')
     def test_turn_off_instrument(self, mock_log):
         """Test turning off instruments"""
         self.agent.turn_on("UV-Vis")
@@ -69,7 +69,7 @@ class TestSafetyMonitoringAgent(unittest.TestCase):
         self.assertIn('nitrogen', self.agent.safety_thresholds)
         self.assertIn('oxygen', self.agent.safety_thresholds)
     
-    @patch('weave.log')
+    @patch('wandb.log')
     def test_monitor_parameters_simulated(self, mock_log):
         """Test parameter monitoring with simulated data"""
         self.agent.monitor_parameters(use_real_data=False)
@@ -83,7 +83,7 @@ class TestSafetyMonitoringAgent(unittest.TestCase):
         # Check logging
         mock_log.assert_called()
     
-    @patch('weave.log')
+    @patch('wandb.log')
     def test_is_safe(self, mock_log):
         """Test safety checking"""
         # Set safe values

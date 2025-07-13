@@ -10,6 +10,7 @@ from enum import Enum
 import json
 from pathlib import Path
 import weave
+import wandb
 
 T = TypeVar('T')
 
@@ -225,7 +226,7 @@ class ErrorHandler:
         # Log to W&B if available
         if self.use_weave:
             try:
-                weave.log({'error': error_record})
+                wandb.log({'error': error_record})
             except:
                 pass
         

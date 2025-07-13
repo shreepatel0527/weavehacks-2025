@@ -2,6 +2,7 @@
 Chemistry calculation utilities for nanoparticle synthesis with error handling
 """
 import weave
+import wandb
 from typing import Dict, Optional, Union
 from ..config.settings import get_chemistry_config
 from .error_handling import (
@@ -107,7 +108,7 @@ def calculate_sulfur_amount(gold_mass_g: float,
         }
         
         # Log calculation
-        weave.log({
+        wandb.log({
             'calculation': {
                 'type': 'sulfur_amount',
                 'input': gold_mass_g,
@@ -175,7 +176,7 @@ def calculate_nabh4_amount(gold_mass_g: float,
         }
         
         # Log calculation
-        weave.log({
+        wandb.log({
             'calculation': {
                 'type': 'nabh4_amount',
                 'input': gold_mass_g,
@@ -251,7 +252,7 @@ def calculate_percent_yield(gold_mass_g: float, actual_yield_g: float) -> Dict[s
         }
         
         # Log calculation
-        weave.log({
+        wandb.log({
             'calculation': {
                 'type': 'percent_yield',
                 'input': gold_mass_g,
@@ -320,7 +321,7 @@ def calculate_toab_ratio(gold_mass_g: float, toab_mass_g: float) -> Dict[str, Un
         }
         
         # Log calculation
-        weave.log({
+        wandb.log({
             'calculation': {
                 'type': 'toab_ratio',
                 'ratio': ratio,
