@@ -1,6 +1,5 @@
 """
 Video Monitoring Agent for Lab Experiments
-<<<<<<< HEAD
 Integrates video monitoring capabilities with the existing lab assistant system
 """
 import cv2
@@ -585,10 +584,9 @@ class VideoMonitoringAgent:
         return self.safety_violations.copy()
 
 # Integration helper function
-def create_video_monitoring_agent(camera_index: int = 0) -> VideoMonitoringAgent:
+def create_video_monitoring_agent_rebase(camera_index: int = 0) -> VideoMonitoringAgent:
     """Factory function to create video monitoring agent"""
     return VideoMonitoringAgent(camera_index=camera_index)
-=======
 Handles video capture, analysis, and monitoring for overnight experiments
 """
 import cv2
@@ -1015,4 +1013,3 @@ class ExperimentMonitor:
             event_type = event['type']
             summary[event_type] = summary.get(event_type, 0) + 1
         return summary
->>>>>>> 53d67be2d1f2e102640295d2fddbe170b3d342c1
