@@ -1,5 +1,8 @@
 import weave
 import wandb
+from agents.voice_recognition_agent import SpeechRecognizerAgent
+import re
+import csv
 
 def safe_wandb_log(data: dict):
     """Safely log to wandb, handling cases where wandb is not initialized"""
@@ -18,36 +21,74 @@ def safe_wandb_log(data: dict):
         pass
 
 class DataCollectionAgent:
-    @weave.op()
-    def record_data(self, prompt):
-        # Simulate data collection based on user input
-        value = float(input(f"{prompt}: "))
-        # Log the data collection to W&B
-        safe_wandb_log({'data_collected': {'prompt': prompt, 'value': value}})
-        return value
+    def __init__(self):
+        self.voice_agent = SpeechRecognizerAgent()
 
-    @weave.op()
-    def clarify_reagent(self):
-        # Prompt the user for clarification on reagents
-        clarification = input("Please clarify the reagent information: ")
-        safe_wandb_log({'clarification_requested': clarification})
-        return clarification
+    def record_data(self, prompt, use_voice=False, experiment_state=None, state_key=None):
+        """
+        Records data based on the given prompt and updates the ExperimentState.
+        Args:
+            prompt (str): The prompt describing the data to record.
+            use_voice (bool): Whether to use voice input for recording data.
+            experiment_state (ExperimentState): The ExperimentState to update.
+            state_key (str): The key in the ExperimentState to update.
+        Returns:
+            float: The recorded data.
+        """
+        if use_voice:
+            print(prompt)
+            success, transcribed_text = self.voice_agent.record_and_transcribe(duration=5.0)
+            if success:
+                print(f"Transcribed Data: {transcribed_text}")
+                extracted_value = self._extract_digit(transcribed_text)
+                if experiment_state is not None and state_key is not None:
+                    setattr(experiment_state, state_key, extracted_value)
+                return extracted_value
+            else:
+                print(f"Error: {transcribed_text}")
+                return None
+        else:
+            print(prompt)
+            recorded_data = input("Enter the data: ")
+            extracted_value = self._extract_digit(recorded_data)
+            if experiment_state is not None and state_key is not None:
+                setattr(experiment_state, state_key, extracted_value)
+            return extracted_value
 
-class LabControlAgent:
-    def turn_on(self, instrument):
-        print(f"{instrument} is now ON.")
+    def _extract_digit(self, text):
+        """
+        Extracts the first float or integer from a text string.
+        Args:
+            text (str): The input text.
+        Returns:
+            float: The extracted number, or None if no number is found.
+        """
+        match = re.search(r"[-+]?\d*\.\d+|\d+", text)
+        if match:
+            return float(match.group())
+        return None
 
-    def turn_off(self, instrument):
-        print(f"{instrument} is now OFF.")
+    def state_to_table(self, experiment_state, output_csv_path):
+        """
+        Converts the ExperimentState into the format of quantitative_observation.csv.
+        Args:
+            experiment_state (ExperimentState): The ExperimentState to convert.
+            output_csv_path (str): The path to save the CSV file.
+        """
+        # Define the mapping of state keys to CSV rows
+        csv_rows = [
+            ["Substance", "Mass (g)", "Volume (mL)"],
+            ["HAuCl₄·3H₂O", experiment_state.mass_gold, None],
+            ["Water (for gold)", None, experiment_state.volume_nanopure_rt],
+            ["TOAB", experiment_state.mass_toab, None],
+            ["Toluene", None, experiment_state.volume_toluene],
+            ["PhCH₂CH₂SH", experiment_state.mass_sulfur, None],
+            ["NaBH₄", experiment_state.mass_nabh4, None],
+            ["Ice-cold Nanopure water (for NaBH₄)", None, experiment_state.volume_nanopure_cold],
+            ["Final mass of nanoparticles", experiment_state.mass_final, None],
+        ]
 
-class SafetyMonitoringAgent:
-    def monitor_parameters(self):
-        # Simulate monitoring safety parameters
-        print("Monitoring safety parameters...")
-
-    def is_safe(self):
-        # Simulate safety check
-        return True
-
-    def notify_scientist(self):
-        print("Safety alert! Please check the instruments.")
+        # Write to CSV
+        with open(output_csv_path, mode="w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerows(csv_rows)
