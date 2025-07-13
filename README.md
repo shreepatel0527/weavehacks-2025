@@ -1,5 +1,6 @@
-# weavehacks-2025
-The public repo for WeaveHacks 2025, focused on agentic workflows for research scientists
+# WeaveHacks 2025: AI-Powered Lab Assistant
+
+Welcome to the **WeaveHacks 2025 AI-Powered Lab Assistant** project! This repository contains a modular and extensible framework designed to assist wet lab scientists in automating data collection, safety monitoring, lab instrument control, and experiment management. By leveraging CrewAI, voice recognition, and advanced caching, this project streamlines workflows and reduces manual effort in the lab.
 
 ## Vision 
 
@@ -15,9 +16,6 @@ Thus, my hands are tied and it is a huge disruption when I need to perform calcu
 When I perform an experiment, I want to be able to scan my parameters effectively, record one experiment on one page, and have the agent record both my numbers and my qualitative results. I want to be able to visualize my parameters (volume, heat, etc.) and compare how these parameters relate to my UV-Vis peak (extracted from a chromatogram, determines whether or not I was successful in making my nanoparticle, or how close I am to the right structure)
 
 I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, etc.)-- let the agent figure it out -- also implement safety checks and controls on those instruments for shut off, inventory management (notie I'm running out of chemical, tell agent to find it and order it for me), agentic video feed monitoring to automate data collection for overinght experiments, agent communicates to scientist
-# WeaveHacks 2025: AI-Powered Lab Assistant
-
-Welcome to the **WeaveHacks 2025 AI-Powered Lab Assistant** project! This repository contains a modular and extensible framework designed to assist wet lab scientists in automating data collection, safety monitoring, lab instrument control, and experiment management. By leveraging CrewAI, voice recognition, and advanced caching, this project streamlines workflows and reduces manual effort in the lab.
 
 ## 🚀 Features
 
