@@ -18,55 +18,36 @@ I would want the agent to: turn on / off lab instruments (centrifuge, UV-Vis, et
 
 ## List of Tasks
 1. Grab HAuCl4 * H2O, TOAB, Nanopure water, toluene
-2. Weigh gold
-3. MEasure water
-4. Dissolve 0.1576 g HAuCl₄·3H₂O in 5 mL Nanopure water -- record mass, record vol, qual obs
-5. Weigh TOAB
-6. Measure toluene
-7. Dissolve \~0.25 g TOAB in 10 mL toluene -- record mass, record vol, qual obs
-8. Combine both in a 25 mL tri-neck round-bottom flask. -- qual obv
+2. Weigh HAuCl₄·3H₂O (0.1576g) -- record mass 
+3. Measure water -- record vol 
+4. Dissolve 0.1576 g HAuCl₄·3H₂O in 5 mL Nanopure water -- qual obs
+5. Weigh TOAB (~0.25g) -- record mass 
+6. Measure toluene -- record vol 
+7. Dissolve \~0.25 g TOAB in 10 mL toluene -- qual obs
+8. Combine both in a 25 mL tri-neck round-bottom flask. -- qual obs
 9. Move to fume hood
 10. Plce on stir plate with stir bar
-11. Stir vigorously (\~1100 rpm) for \~15 min. -- qual obv at the end of 15 min
+11. Stir vigorously (\~1100 rpm) for \~15 min. -- qual obv at the end of 15 min -- safety monitoring
 12. Remove the aqueous layer with a 10 mL syringe.
 13. Place gasket and gas needle on round-bottom flask
 14. Purge with N₂
 15. Cool to 0°C in ice bath over 30 min with stirring.
-16. Grab PhCH₂CH₂SH 
-17. Add 3 eq. PhCH₂CH₂SH (relative to gold). -- calc, record mass
-18. Stir slowly; observe color change: deep red → faint yellow (\~5 min) → clear (\~1 hr). -- qual obs
-19. Grab NaBH₄
-20. Increase stir speed
-21. Add 10 eq. NaBH₄ in 7 mL ice-cold Nanopure water. - qual obs
-22. Stir overnight under N₂ atmosphere.
-23. Remove aqueous layer next day with syringe. -- qual obs
-24. Dry toluene layer.
-25. Add 20 mL ethanol to separate Au₂₅ clusters. -- record vol
-26. Remove supernatant and collect Au₂₅ clusters.
+16. Grab PhCH₂CH₂SH
+17. Calculate amount of PhCH₂CH₂SH -- calculation
+18. Weight PhCH₂CH₂SH -- record mass 
+19. Add 3 eq. PhCH₂CH₂SH (relative to gold). 
+20. Stir slowly; observe color change: deep red → faint yellow (\~5 min) → clear (\~1 hr). -- qual obs -- safety monitoring
+21. Grab NaBH₄
+22. Increase stir speed
+23. Calculate amount of NaBH₄ -- calculation
+24. Weight NaBH₄ 
+25. Add 10 eq. NaBH₄ in 7 mL ice-cold Nanopure water. - qual obs
+26. Stir overnight under N₂ atmosphere. -- safety monitoring
+27. Remove aqueous layer next day with syringe. -- qual obs
+28. Dry toluene layer.
+29. Add 20 mL ethanol to separate Au₂₅ clusters. -- record vol
+30. Remove supernatant and collect Au₂₅ clusters.
 
-### DEP List of Steps
-1. Grab reagents (gold, sulfur, solvents)
-2. Weigh reagents (gold, sulfur)
-3. Record volume (solvents) (Data Collection Agent: Voice to Text)
-4. Record mass (Data Collection Agent: Voice to Text)
-5. Move to fume hood 
-6. Mix ingredients
-7. Observe changes 
-8. Record changes (Data Collection Agent: Voice to Text)
-9. Determine, based on changes, whether to continue with experiment (OPTIONAL: Experiment Projection Agent -- Visualization / Computation)
-10. Extract black particles
-11. Mix with solvent
-12. Observe changes 
-13. Record changes (Data Collection Agent: Voice to Text)
-14. Pre-heat oil bath (Lab Instrument Control Agent)
-15. Move to oil bath
-16. Record parameters (Data Collection Agent: Voice to Text)
-17. Set up video feed to monitor experiment
-18. Go home bc the oil bath will take 16 hours
-19. Monitor video feed (AI TBD WHAT THIS LOOKS LIKE)
-20. Record data from video feed -- qualitative changes (Data Collection Agent? TBD)
-21. In the event of a safety issue, alert scientist (Safety Monitoring Agent)
-22. In the event of a safety issue, turn off lab instruments (Lab Instrument Control Agent)
 
 | **Category / Prize**                       | **Relevant Tasks**                                                            | **Suggested Tools / APIs**                                         | **Why It Helps**                                                                                   |
 | ------------------------------------------ | ----------------------------------------------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
