@@ -6,3 +6,8 @@ scipy
 requests
 weave
 wandb
+sounddevice
+soundfile
+openai-whisper
+streamlit
+pytest

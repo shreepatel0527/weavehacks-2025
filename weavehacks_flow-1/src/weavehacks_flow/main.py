@@ -34,14 +34,14 @@ def listen(previous_method):
 # Use compatibility class instead of Flow
 Flow = FlowCompatibility
 import weave
-from agents.data_collection_agent import DataCollectionAgent
-from agents.lab_control_agent import LabControlAgent
-from agents.safety_monitoring_agent import SafetyMonitoringAgent
-from agents.voice_recognition_agent import SpeechRecognizerAgent
+from .agents.data_collection_agent import DataCollectionAgent
+from .agents.lab_control_agent import LabControlAgent
+from .agents.safety_monitoring_agent import SafetyMonitoringAgent
+from .agents.voice_recognition_agent import SpeechRecognizerAgent
 # from .crews.data_collection_crew.data_collection_crew import DataCollectionCrew
 # from .crews.lab_control_crew.lab_control_crew import LabControlCrew
 # from .crews.safety_monitoring_crew.safety_monitoring_crew import SafetyMonitoringCrew
-from utils.chemistry_calculations import (
+from .utils.chemistry_calculations import (
     calculate_sulfur_amount,
     calculate_nabh4_amount,
     calculate_percent_yield
