@@ -164,11 +164,25 @@ def initialize_session_state():
 @weave.op()
 def process_voice_data_entry(transcript: str, experiment_id: str):
     """Process voice input for data entry using integrated agents"""
-    platform = st.session_state.platform
-    
-    # Use data collection agent to interpret the transcript
-    # Parse common patterns like "gold mass is 0.1576 grams"
-    transcript_lower = transcript.lower()
+    try:
+        # Validate inputs
+        if not transcript or not transcript.strip():
+            return False, "No transcript provided"
+        
+        if not experiment_id:
+            return False, "No experiment ID provided - please create an experiment first"
+        
+        platform = st.session_state.platform
+        
+        # Use data collection agent to interpret the transcript
+        # Parse common patterns like "gold mass is 0.1576 grams"
+        transcript_lower = transcript.lower().strip()
+        
+        # Log the transcript for debugging
+        st.info(f"🔍 Processing transcript: '{transcript}'")
+        
+    except Exception as e:
+        return False, f"Failed to initialize voice processing: {str(e)}"
     
     # Compound mapping
     compound_mapping = {
@@ -183,44 +197,74 @@ def process_voice_data_entry(transcript: str, experiment_id: str):
         'final': 'Au25 nanoparticles'
     }
     
-    # Extract value and units
-    import re
-    
-    # Pattern for numbers followed by units
-    number_pattern = r'(\d+\.?\d*)\s*(g|gram|grams|ml|milliliter|milliliters|mL)'
-    matches = re.findall(number_pattern, transcript_lower)
-    
-    if matches:
-        value, units = matches[0]
-        value = float(value)
+    try:
+        # Extract value and units
+        import re
         
-        # Normalize units
-        if units.startswith('g'):
-            units = 'g'
-        elif units.startswith('ml') or units == 'mL':
-            units = 'mL'
+        # Enhanced pattern for numbers followed by units (including decimals, scientific notation)
+        number_pattern = r'(\d+\.?\d*|\d*\.\d+)\s*(g|gram|grams|ml|milliliter|milliliters|mL)'
+        matches = re.findall(number_pattern, transcript_lower)
         
-        # Find compound
-        compound = None
-        for key, mapped_compound in compound_mapping.items():
-            if key in transcript_lower:
-                compound = mapped_compound
-                break
+        st.info(f"🔢 Found number patterns: {matches}")
         
-        if compound:
-            data_type = "mass" if units == 'g' else "volume"
-            success, result = platform.record_data_via_api(
-                experiment_id, data_type, compound, value, units
-            )
+        if not matches:
+            # Try alternative patterns
+            alt_patterns = [
+                r'(\d+\.?\d*|\d*\.\d+)\s*(grams?|milliliters?)',
+                r'(\d+\.?\d*|\d*\.\d+)\s*g\b',
+                r'(\d+\.?\d*|\d*\.\d+)\s*ml\b',
+            ]
+            for pattern in alt_patterns:
+                matches = re.findall(pattern, transcript_lower)
+                if matches:
+                    st.info(f"🔢 Alternative pattern matched: {matches}")
+                    break
+        
+        if matches:
+            value, units = matches[0]
+            try:
+                value = float(value)
+                st.info(f"✅ Extracted value: {value}")
+            except ValueError as e:
+                return False, f"Could not parse number '{value}' from transcript: {str(e)}"
             
-            if success:
-                return True, f"Recorded {compound}: {value} {units}"
+            # Normalize units
+            if units.startswith('g'):
+                units = 'g'
+            elif units.startswith('ml') or units == 'mL':
+                units = 'mL'
+            
+            # Find compound
+            compound = None
+            compounds_found = []
+            for key, mapped_compound in compound_mapping.items():
+                if key in transcript_lower:
+                    compounds_found.append((key, mapped_compound))
+                    if compound is None:  # Take the first match
+                        compound = mapped_compound
+            
+            st.info(f"🧪 Compounds found: {compounds_found}")
+            st.info(f"🧪 Selected compound: {compound}")
+            
+            if compound:
+                data_type = "mass" if units == 'g' else "volume"
+                st.info(f"📊 Recording: {compound} = {value} {units} (type: {data_type})")
+                
+                success, result = platform.record_data_via_api(
+                    experiment_id, data_type, compound, value, units
+                )
+                
+                if success:
+                    return True, f"Recorded {compound}: {value} {units}"
+                else:
+                    return False, f"Failed to record data: {result}"
             else:
-                return False, f"Failed to record data: {result}"
+                return False, f"Could not identify compound from voice input. Found compounds: {compounds_found}"
         else:
-            return False, "Could not identify compound from voice input"
-    else:
-        return False, "Could not extract numerical value from voice input"
+            return False, f"Could not extract numerical value from voice input. Transcript: '{transcript}'"
+    
+    except Exception as e:
+        return False, f"Error processing voice input: {str(e)}"
 
 
 def display_experiment_dashboard():
@@ -327,6 +371,19 @@ def display_voice_data_entry():
         st.warning("Please create an experiment first in the Dashboard tab.")
         return
     
+    # Debug info
+    with st.expander("🔍 Debug Info"):
+        st.write(f"Current Experiment ID: {st.session_state.current_experiment_id}")
+        st.write(f"Platform available: {hasattr(st.session_state, 'platform')}")
+        if hasattr(st.session_state, 'platform'):
+            try:
+                response = requests.get(f"{API_BASE_URL}/health", timeout=2)
+                st.write(f"Backend status: ✅ Online ({response.status_code})")
+            except:
+                st.write("Backend status: ❌ Offline")
+        st.write(f"Audio input available: {hasattr(st, 'audio_input')}")
+        st.write(f"Streamlit version: {st.__version__}")
+    
     # Voice recording interface
     st.write("**Instructions:** Say something like:")
     st.code("""
@@ -367,24 +424,58 @@ def display_voice_data_entry():
     
     if audio_bytes is not None:
         with st.spinner("Processing audio..."):
+            # Validate experiment exists first
+            if not st.session_state.current_experiment_id:
+                st.error("❌ Please create an experiment first in the Dashboard tab.")
+                return
+            
+            # Test backend connectivity
+            try:
+                response = requests.get(f"{API_BASE_URL}/health", timeout=5)
+                if response.status_code != 200:
+                    st.error("❌ Backend API not responding. Please start the backend server.")
+                    st.code("cd backend && python3 -m uvicorn main:app --reload")
+                    return
+            except Exception as e:
+                st.error(f"❌ Cannot connect to backend: {str(e)}")
+                st.info("💡 Make sure the backend is running on port 8000")
+                return
+            
             # Transcribe audio using Whisper
+            tmp_path = None
             try:
                 import whisper
                 import tempfile
                 import os
                 
+                st.info("🎵 Saving audio file...")
+                
                 # Save audio to temp file
                 with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_file:
-                    tmp_file.write(audio_bytes.read())
+                    audio_data = audio_bytes.read() if hasattr(audio_bytes, 'read') else audio_bytes
+                    if not audio_data:
+                        st.error("❌ No audio data received")
+                        return
+                    
+                    tmp_file.write(audio_data)
                     tmp_path = tmp_file.name
+                
+                st.info(f"💿 Audio saved to temp file: {os.path.basename(tmp_path)}")
                 
                 # Load Whisper model if not already loaded
                 if 'whisper_model' not in st.session_state:
+                    st.info("🤖 Loading Whisper model (this may take a moment)...")
                     st.session_state.whisper_model = whisper.load_model("base")
+                    st.success("✅ Whisper model loaded")
                 
                 # Transcribe
+                st.info("🎤 Transcribing audio...")
                 result = st.session_state.whisper_model.transcribe(tmp_path, language="en")
                 transcript = result["text"].strip()
+                
+                if not transcript:
+                    st.error("❌ No speech detected in audio")
+                    return
                 
                 # Clean up
                 os.unlink(tmp_path)
@@ -392,23 +483,39 @@ def display_voice_data_entry():
                 st.success(f"Transcribed: {transcript}")
                 
                 # Process the transcript
+                st.info("🧠 Processing transcript...")
                 success, message = process_voice_data_entry(transcript, st.session_state.current_experiment_id)
                 
                 if success:
-                    st.success(message)
+                    st.success(f"✅ {message}")
                     # Refresh experiment data
                     platform = st.session_state.platform
                     success, updated_exp = platform.get_experiment(st.session_state.current_experiment_id)
                     if success:
                         st.session_state.current_experiment = updated_exp
                         st.rerun()
+                    else:
+                        st.warning("Data recorded but couldn't refresh experiment view")
                 else:
-                    st.error(message)
+                    st.error(f"❌ {message}")
+                    # Provide helpful suggestions
+                    st.info("💡 **Troubleshooting:**")
+                    st.info("• Make sure you mention both a compound and a number with units")
+                    st.info("• Try saying: 'Gold mass is 0.1576 grams'")
+                    st.info("• Supported compounds: gold, TOAB, sulfur, nabh4, toluene, water, final")
+                    st.info("• Supported units: grams, g, milliliters, ml")
                     
             except ImportError:
-                st.error("Whisper not installed. Install with: pip install openai-whisper")
+                st.error("❌ Whisper not installed. Install with: pip install openai-whisper")
+                st.info("💡 You can still use manual data entry below")
             except Exception as e:
-                st.error(f"Audio processing error: {str(e)}")
+                st.error(f"❌ Error processing audio: {str(e)}")
+                if tmp_path and os.path.exists(tmp_path):
+                    try:
+                        os.unlink(tmp_path)
+                    except:
+                        pass
+                st.info("💡 Try using manual data entry below or re-record your audio")
     
     # Manual data entry fallback
     st.subheader("📝 Manual Data Entry")
