@@ -35,12 +35,11 @@ def listen(previous_method):
 # Use compatibility class instead of Flow
 Flow = FlowCompatibility
 import weave
-from agents.data_collection_agent import DataCollectionAgent
-from agents.lab_control_agent import LabControlAgent
-from agents.safety_monitoring_agent import EnhancedSafetyMonitoringAgent
-from agents.safety_monitoring_agent import SafetyMonitoringAgent
-from agents.video_monitoring_agent import VideoMonitoringAgent
-from agents.voice_recognition_agent import SpeechRecognizerAgent
+from .agents.data_collection_agent import DataCollectionAgent
+from .agents.lab_control_agent import LabControlAgent
+from .agents.safety_monitoring_agent import EnhancedSafetyMonitoringAgent
+from .agents.video_monitoring_agent import VideoMonitoringAgent
+from .agents.voice_recognition_agent import SpeechRecognizerAgent
 # from .crews.data_collection_crew.data_collection_crew import DataCollectionCrew
 # from .crews.lab_control_crew.lab_control_crew import LabControlCrew
 # from .crews.safety_monitoring_crew.safety_monitoring_crew import SafetyMonitoringCrew
@@ -83,8 +82,6 @@ class ExperimentFlow(FlowCompatibility):
         self.data_agent = DataCollectionAgent()
         self.lab_agent = LabControlAgent()
         self.safety_agent = EnhancedSafetyMonitoringAgent()
-        #self.safety_agent = SafetyMonitoringAgent()
-        self.video_agent = VideoMonitoringAgent()
         self.voice_agent = SpeechRecognizerAgent(model_size="base")
         
         # Initialize video agent with graceful fallback if OpenCV not available
@@ -289,7 +286,7 @@ class ExperimentFlow(FlowCompatibility):
     
     def _handle_video_safety_event(self, event):
         """Handle safety events detected by video monitoring"""
-        from .agents.video_monitoring_agent import EventType
+        from ..agents.video_monitoring_agent import EventType
         
         if event.event_type == EventType.SAFETY_VIOLATION:
             print(f"\n⚠️ VIDEO SAFETY VIOLATION DETECTED: {event.description}")
