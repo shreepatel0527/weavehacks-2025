@@ -90,7 +90,8 @@ def process_user_input(prompt: str):
     else:
         st.error(response)
     
-    # No need to force rerun - Streamlit will handle the update
+    # Force a rerun to display the new messages
+    st.rerun()
 
 
 def transcribe_browser_audio(audio_bytes):
