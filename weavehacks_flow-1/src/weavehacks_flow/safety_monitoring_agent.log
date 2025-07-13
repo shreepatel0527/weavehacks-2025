@@ -1,0 +1,20 @@
+2025-07-13 11:50:26,493 - agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 11:51:44,282 - agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 11:52:16,950 - agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 11:52:16,995 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 11:52:17,112 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 11:52:19,598 - httpx - INFO - HTTP Request: GET https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json "HTTP/1.1 200 OK"
+2025-07-13 11:52:23,553 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 11:52:23,701 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 11:52:24,032 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/lab-assistant-errors/weave
+2025-07-13 11:52:24,162 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 11:52:24,277 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 11:52:24,424 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 11:52:24,537 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 11:52:24,737 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/weave
+2025-07-13 11:52:24,758 - agents.safety_monitoring_agent - INFO - Initialized 4 experiment configurations
+2025-07-13 11:52:25,070 - agents.safety_monitoring_agent - INFO - Enhanced Safety Monitoring Agent initialized
+2025-07-13 11:52:25,566 - weave.trace.op - INFO - 🍩 https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/r/call/01980521-9935-70f4-878e-a5dee6bfc8cc
+2025-07-13 11:52:25,810 - lab_assistant - WARNING - {"timestamp": "2025-07-13T11:52:25.784229", "error_type": "LabAssistantError", "message": "Error in calculate_sulfur_amount: '>' not supported between instances of 'NoneType' and 'int'", "traceback": "Traceback (most recent call last):\n  File \"/home/shreepatel527/hackathons/weavehacks-2025/weavehacks_flow-1/src/weavehacks_flow/utils/error_handling.py\", line 382, in wrapper\n    return func(*args, **kwargs)\n  File \"/home/shreepatel527/hackathons/weavehacks-2025/weavehacks_flow-1/src/weavehacks_flow/utils/error_handling.py\", line 436, in wrapper\n    if not validator(value):\n  File \"/home/shreepatel527/hackathons/weavehacks-2025/weavehacks_flow-1/src/weavehacks_flow/utils/chemistry_calculations.py\", line 83, in <lambda>\n    'gold_mass_g': lambda x: x > 0,\nTypeError: '>' not supported between instances of 'NoneType' and 'int'\n", "context": {"function": "calculate_sulfur_amount", "args": "(None,)", "kwargs": "{}"}, "category": "system", "severity": "medium", "details": {"function": "calculate_sulfur_amount", "args": "(None,)", "kwargs": "{}"}}
