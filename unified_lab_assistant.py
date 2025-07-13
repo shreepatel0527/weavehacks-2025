@@ -20,6 +20,7 @@ from claude_interface import ClaudeInterface
 from gemini_interface import GeminiInterface
 from speech_recognition_module import SpeechRecognizer
 from weavehacks_flow.agents.safety_monitoring_agent import SafetyMonitoringAgent
+from weavehacks_flow.agents.video_monitoring_agent import VideoMonitoringAgent
 from weavehacks_flow.utils.chemistry_calculations import (
     calculate_sulfur_amount,
     calculate_nabh4_amount,
@@ -66,6 +67,10 @@ def initialize_session_state():
         st.session_state.safety_agent = SafetyMonitoringAgent()
     if 'safety_monitoring_active' not in st.session_state:
         st.session_state.safety_monitoring_active = False
+    if 'video_agent' not in st.session_state:
+        st.session_state.video_agent = VideoMonitoringAgent()
+    if 'video_monitoring_active' not in st.session_state:
+        st.session_state.video_monitoring_active = False
     
     # Test connections only once at startup
     if 'claude_status' not in st.session_state:
@@ -304,6 +309,102 @@ def render_protocol_panel():
             else:
                 st.markdown(f"○ {step}")
 
+def render_video_monitoring_panel():
+    """Render the video monitoring panel"""
+    st.subheader("📹 Video Monitoring")
+    
+    col1, col2, col3 = st.columns([2, 2, 1])
+    
+    with col1:
+        monitoring_active = st.toggle(
+            "Video Monitoring",
+            value=st.session_state.video_monitoring_active,
+            help="Enable real-time video monitoring for color changes and motion"
+        )
+    
+    with col2:
+        recording_active = st.toggle(
+            "Recording",
+            value=st.session_state.video_agent.is_recording if hasattr(st.session_state.video_agent, 'is_recording') else False,
+            help="Record video during experiment"
+        )
+    
+    with col3:
+        if st.button("📸 Snapshot"):
+            frame = st.session_state.video_agent.get_current_frame()
+            if frame is not None:
+                st.image(frame, caption="Current Frame", channels="BGR")
+            else:
+                st.warning("No camera available")
+    
+    # Handle monitoring state changes
+    if monitoring_active != st.session_state.video_monitoring_active:
+        st.session_state.video_monitoring_active = monitoring_active
+        if monitoring_active:
+            result = st.session_state.video_agent.start_monitoring()
+            if result['status'] == 'success':
+                st.success("Video monitoring started")
+            else:
+                st.error(f"Failed to start monitoring: {result['message']}")
+                st.session_state.video_monitoring_active = False
+        else:
+            result = st.session_state.video_agent.stop_monitoring()
+            st.info("Video monitoring stopped")
+    
+    # Handle recording state changes
+    current_recording = st.session_state.video_agent.is_recording if hasattr(st.session_state.video_agent, 'is_recording') else False
+    if recording_active != current_recording:
+        if recording_active:
+            result = st.session_state.video_agent.start_recording()
+            if result['status'] == 'success':
+                st.success(f"Recording started: {result['message']}")
+            else:
+                st.error(f"Failed to start recording: {result['message']}")
+        else:
+            result = st.session_state.video_agent.stop_recording()
+            st.info("Recording stopped")
+    
+    # Display video monitoring statistics and events
+    if st.session_state.video_monitoring_active:
+        summary = st.session_state.video_agent.get_event_summary()
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Frames Processed", summary['frames_processed'])
+        with col2:
+            st.metric("Events Detected", summary['total_events'])
+        with col3:
+            safety_color = "🔴" if summary['safety_violations'] > 0 else "🟢"
+            st.metric(f"{safety_color} Safety", f"{summary['safety_violations']} violations")
+        with col4:
+            status_color = "🟢" if summary['monitoring_active'] else "🔴"
+            st.metric(f"{status_color} Status", "Active" if summary['monitoring_active'] else "Inactive")
+        
+        # Display recent events
+        if summary['total_events'] > 0:
+            st.write("**Recent Events:**")
+            recent_events = st.session_state.video_agent.get_latest_events(5)
+            
+            for event in reversed(recent_events):
+                event_time = event.timestamp.strftime('%H:%M:%S')
+                confidence_bar = "🟢" if event.confidence > 0.7 else "🟡" if event.confidence > 0.4 else "🔴"
+                
+                with st.expander(f"{confidence_bar} {event.event_type.value.title()} - {event_time}"):
+                    st.write(f"**Description:** {event.description}")
+                    st.write(f"**Confidence:** {event.confidence:.2f}")
+                    st.write(f"**Frame:** {event.frame_number}")
+                    
+                    if event.region_of_interest:
+                        x, y, w, h = event.region_of_interest
+                        st.write(f"**Region:** ({x}, {y}) - {w}x{h}")
+        
+        # Safety violations alert
+        if summary['safety_violations'] > 0:
+            st.error("⚠️ Safety violations detected in video monitoring!")
+            violations = st.session_state.video_agent.get_safety_violations()
+            for violation in violations[-3:]:  # Show last 3 violations
+                st.warning(f"🚨 {violation.timestamp.strftime('%H:%M:%S')}: {violation.description}")
+
 def render_observations_panel():
     """Render the qualitative observations panel"""
     st.subheader("📝 Qualitative Observations")
@@ -348,9 +449,10 @@ def main():
     st.caption("AI-powered assistance for wet lab nanoparticle synthesis")
     
     # Create tabs for different functionalities
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "🎙️ AI Assistant",
         "🚨 Safety",
+        "📹 Video",
         "📊 Data Collection",
         "📋 Protocol",
         "📝 Observations"
@@ -422,12 +524,15 @@ def main():
         render_safety_panel()
     
     with tab3:
-        render_data_collection_panel()
+        render_video_monitoring_panel()
     
     with tab4:
-        render_protocol_panel()
+        render_data_collection_panel()
     
     with tab5:
+        render_protocol_panel()
+    
+    with tab6:
         render_observations_panel()
     
     # Sidebar with experiment summary
