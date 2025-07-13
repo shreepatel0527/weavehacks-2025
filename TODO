@@ -1,0 +1,54 @@
+Dear AI
+
+Please take this existing repository and augment the code according to the guidelines below within << >> characters, extrapolating the intent from the git log commits (which are also copied into the last-git-log file), and according to the description that follows. You are to progress through three different attempts. You have been given three different copies of the source code and repository. At the highest level, perform the task of enhancing sequentially in time - without parallelism - so that you can make enhancements to each repostiory and then when you get to the next one (of three) you can incorporate any learnings and insight you got. For each of the three iterations, you can take a slightly different approach from the start - or incorporate your best ideas in the next iteration.
+
+In all cases, as you progress through each code base, please log your commits using Git. You might find that you go as far as having dozens of commits for each of the three starting points. We certainly want to verbosely log your intent.
+
+So please always start in each instance by truly attempting to absorb and understand the whole code base, even if you do that piece by piece. That way you can get a sense for what has been committed. We have a small team of five people and we've been using AI tools and multiple directories. We certainly want working and functional code, so you may add tests. You may read through READMEs and other documentations to get hints.
+
+So we'd like to have a UI with AI functionality that enables research scientists to be more productive, including in wet lab environments. Ideally this would be positioned as a superset of an LLM chatbot, in which we allow for interacting using text and voice to perform normal LLM conversations and interactions. Yet we are allowing the user to invoke ruvnet/claude-flow arbitrary agentic goal-oriented flows if this is deemed appropriate for a request. So that lets us write and build python code, test it, and run it, to process data files that are stored locally on the host. Such data files might be CSV or some simplified "spreadsheet". And Python calculations might shift, alter, merge, and calculate. So we have a sandbox and framework to let the user compute arbitrarily.
+
+We also have Robert's scripts to reach out to external scientific archives. Note that this is a live demo and prototype we will be supervising. And all inputs will be given by the presenters. So we don't need to exercise the same kind of security precautions that we would if this were deployed truly in production. It's the exact opposite. We will ask very simple things.
+
+We can certainly attempt to polish the UI. We can explore continuous realtime ingesting of sound and audio instead of requiring that the user press a button. We'll also have an interrupt-driven flow in the conversation so that the scientist can be notified by AI when a technical instrument reports the experiment needs attention, like exceeding temperature and parameters.
+
+We are also streamlining the ability for the user to follow protocols and measurements - ideally hands free while they speak the measurement results. These protocols could be provided at known time intervals, or they could proceed step by step when the user moves on to the next step.
+
+So these represent the overall intent. Please craft impressive and polished iterations on the code. You may use your inventiveness and insight. Be sure you focus on enhancements that you can test and assure that we don't ruin our stability. Really we want to converge toward greater stability, unity and elegant architecture. If you're able to see some of the instructions/ideas below you can follow the enhancements proposed by AI and even attempt to prepare us for other steps we will be focusing on later in the day. Good luck!
+
+
+<<
+
+Timeframe: 9am - 1:30pm (4.5 hours)
+Requirements:
+Integrate weave 
+
+Michael AI Prompting
+We are a hackathon team working on an agentic assistant for wet lab research scientists. Note that the eligibility requirement is as follows: project must use W&B Weave (itÕs literally 2 lines of code to check this box.  https://wandb.ai/site/weave/). We are using Crew AI to orchestrate our three agents: lab control agent, safety monitoring agent, and data collection agent. 
+
+The input is the userÕs voice, so there will be a voice to text functionality that we add. This is NOT within your scope. 
+
+The data collection agent takes the text from the voice input on measurement recording steps to alter the state of the crew AI flow. The safety monitoring agent monitors an I/O stream to determine if temperature and pressure are getting out of hand. The lab control agent turns equipment on or off at user request or if there is a safety event. 
+
+First, read the code in my repository, focusing on the weavehacks_flow-1 folder. EXCLUSIVELY modify the code in this folder. Second, perform the following actions on this code:
+
+Clean up the syntax of the code
+Write a method to perform a calculation for the amount of sulfur needed and the amount of NaBH4 needed based on the molar equivalents specified in the functions that modify those attributes 
+Write a method to calculate percent yield of the experiment based on the initial HAuCl4 content 
+Integrate W&B weave into the project to monitor the agents
+If feasible, write a functionality to convert the userÕs voice into a text stream that is compatible with the other functions we have. 
+
+
+To-do Sunday:
+Connect AndyÕs UI and RohitÕs UI
+Presentation Development
+Develop Agent for Calculations (percent yield, calculate sulfur amount) Ð or hardcode
+Test Code + Hide Errors
+Integrate Voice Processing 
+Real-time vs Fall-back
+Write methods to connect with RobertÕs API codes
+Agentic? Non-agentic?
+Check on the lab control functionality
+Andy needs an API key
+
+>>
