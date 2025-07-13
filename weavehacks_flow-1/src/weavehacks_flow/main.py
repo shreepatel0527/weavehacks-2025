@@ -79,7 +79,7 @@ class ExperimentFlow(FlowCompatibility):
         super().__init__(ExperimentState)
         self.data_agent = DataCollectionAgent()
         self.lab_agent = LabControlAgent()
-        self.safety_agent = SafetyMonitoringAgent()
+        self.safety_agent = EnhancedSafetyMonitoringAgent()
         self._setup_workflow()
     
     def _setup_workflow(self):
