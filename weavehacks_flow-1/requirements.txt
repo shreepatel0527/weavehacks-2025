@@ -11,3 +11,4 @@ soundfile
 openai-whisper
 streamlit
 pytest
+opencv-python>=4.8.0
