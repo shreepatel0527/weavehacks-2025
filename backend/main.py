@@ -13,6 +13,7 @@ import logging
 import asyncio
 from datetime import datetime
 import weave
+from sensor_simulator import sensor_simulator, SensorType
 
 # Initialize Weave for observability
 try:
@@ -313,10 +314,87 @@ async def calculate_percent_yield(experiment_id: str, gold_mass: float, final_ma
     logger.info(f"Calculated percent yield for {experiment_id}: {percent_yield:.2f}%")
     return result
 
+# Sensor Data Endpoints
+@app.post("/sensors/start-experiment")
+@weave.op()
+async def start_sensor_experiment(experiment_type: str, experiment_id: str):
+    """Start sensor simulation for an experiment"""
+    success, message = sensor_simulator.start_experiment(experiment_type, experiment_id)
+    
+    if success:
+        logger.info(f"Started sensor simulation for {experiment_id}: {experiment_type}")
+        return {"success": True, "message": message}
+    else:
+        logger.error(f"Failed to start sensor simulation: {message}")
+        raise HTTPException(status_code=400, detail=message)
+
+@app.get("/sensors/readings")
+async def get_sensor_readings(count: int = 50):
+    """Get recent sensor readings"""
+    readings = sensor_simulator.get_recent_readings(count)
+    return {"readings": readings, "count": len(readings)}
+
+@app.get("/sensors/status")
+async def get_sensor_status():
+    """Get sensor system status"""
+    experiment_status = sensor_simulator.get_experiment_status()
+    recent_readings = sensor_simulator.get_recent_readings(10)
+    
+    # Check for safety alerts
+    from sensor_simulator import SensorReading, SensorType
+    reading_objects = []
+    for r in recent_readings:
+        reading_objects.append(SensorReading(
+            sensor_id=r["sensor_id"],
+            sensor_type=SensorType(r["sensor_type"]),
+            value=r["value"],
+            units=r["units"],
+            timestamp=datetime.fromisoformat(r["timestamp"]),
+            location=r["location"],
+            experiment_id=r.get("experiment_id")
+        ))
+    
+    safety_alerts = sensor_simulator.check_safety_thresholds(reading_objects)
+    
+    return {
+        "experiment": experiment_status,
+        "recent_readings": recent_readings,
+        "safety_alerts": safety_alerts,
+        "sensor_count": len(sensor_simulator.sensors),
+        "simulation_active": sensor_simulator.is_running
+    }
+
+@app.post("/sensors/stop")
+@weave.op()
+async def stop_sensor_simulation():
+    """Stop sensor simulation"""
+    sensor_simulator.stop_simulation()
+    logger.info("Stopped sensor simulation")
+    return {"message": "Sensor simulation stopped"}
+
+@app.get("/sensors/experiment-types")
+async def get_experiment_types():
+    """Get available experiment types for sensor simulation"""
+    return {
+        "experiment_types": list(sensor_simulator.experiment_profiles.keys()),
+        "profiles": {
+            name: {
+                "name": profile.name,
+                "temperature_range": profile.temp_range,
+                "pressure_range": profile.pressure_range,
+                "duration_hours": profile.duration_hours
+            }
+            for name, profile in sensor_simulator.experiment_profiles.items()
+        }
+    }
+
 # WebSocket endpoint for real-time updates (placeholder)
 @app.get("/ws")
 async def websocket_info():
     return {"message": "WebSocket endpoint for real-time updates", "endpoint": "/ws"}
 
 if __name__ == "__main__":
+    # Start sensor simulation by default
+    sensor_simulator.start_simulation()
+    
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

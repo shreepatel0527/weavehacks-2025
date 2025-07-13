@@ -410,8 +410,8 @@ def display_voice_data_entry():
 
 
 def display_safety_monitoring():
-    """Safety monitoring interface with API integration"""
-    st.subheader("🛡️ Safety Monitoring")
+    """Enhanced safety monitoring interface with real-time sensor data"""
+    st.subheader("🛡️ Real-Time Safety Monitoring")
     
     if not st.session_state.current_experiment_id:
         st.warning("Please create an experiment first in the Dashboard tab.")
@@ -419,34 +419,244 @@ def display_safety_monitoring():
     
     platform = st.session_state.platform
     
-    # Safety status
-    st.metric("Safety Status", "🟢 Safe", help="All parameters within normal ranges")
+    # Get sensor status
+    try:
+        response = requests.get(f"{API_BASE_URL}/sensors/status")
+        if response.status_code == 200:
+            sensor_data = response.json()
+        else:
+            sensor_data = {"experiment": {"active": False}, "recent_readings": [], "safety_alerts": []}
+    except:
+        sensor_data = {"experiment": {"active": False}, "recent_readings": [], "safety_alerts": []}
     
-    # Test safety alert
-    st.subheader("⚠️ Safety Alert Testing")
+    # Experiment controls
+    col1, col2, col3 = st.columns(3)
     
-    with st.form("safety_alert_test"):
-        col1, col2, col3 = st.columns(3)
+    with col1:
+        # Get available experiment types
+        try:
+            exp_types_response = requests.get(f"{API_BASE_URL}/sensors/experiment-types")
+            if exp_types_response.status_code == 200:
+                exp_types_data = exp_types_response.json()
+                experiment_types = list(exp_types_data["experiment_types"])
+            else:
+                experiment_types = ["nanoparticle_synthesis"]
+        except:
+            experiment_types = ["nanoparticle_synthesis"]
         
+        selected_exp_type = st.selectbox("Experiment Type", experiment_types)
+    
+    with col2:
+        if st.button("🟢 Start Sensor Monitoring"):
+            try:
+                response = requests.post(f"{API_BASE_URL}/sensors/start-experiment", 
+                                       params={"experiment_type": selected_exp_type, 
+                                              "experiment_id": st.session_state.current_experiment_id})
+                if response.status_code == 200:
+                    st.success("Sensor monitoring started!")
+                    st.rerun()
+                else:
+                    st.error("Failed to start monitoring")
+            except Exception as e:
+                st.error(f"Connection error: {e}")
+    
+    with col3:
+        if st.button("🔴 Stop Monitoring"):
+            try:
+                response = requests.post(f"{API_BASE_URL}/sensors/stop")
+                if response.status_code == 200:
+                    st.info("Sensor monitoring stopped")
+                    st.rerun()
+                else:
+                    st.error("Failed to stop monitoring")
+            except Exception as e:
+                st.error(f"Connection error: {e}")
+    
+    # Display experiment status
+    experiment_status = sensor_data.get("experiment", {})
+    if experiment_status.get("active", False):
+        st.success(f"🟢 Monitoring Active: {experiment_status.get('experiment_type', 'Unknown')}")
+        
+        col1, col2, col3 = st.columns(3)
         with col1:
-            parameter = st.selectbox("Parameter", ["temperature", "pressure", "gas_level"])
+            elapsed_hours = experiment_status.get("elapsed_hours", 0)
+            st.metric("Elapsed Time", f"{elapsed_hours:.1f}h")
         
         with col2:
-            value = st.number_input("Current Value", min_value=0.0)
-            threshold = st.number_input("Threshold", min_value=0.0)
+            progress = experiment_status.get("progress_percent", 0)
+            st.metric("Progress", f"{progress:.1f}%")
         
         with col3:
-            severity = st.selectbox("Severity", ["warning", "critical"])
+            expected_hours = experiment_status.get("expected_duration_hours", 0)
+            st.metric("Expected Duration", f"{expected_hours}h")
         
-        if st.form_submit_button("Create Test Alert"):
-            success, result = platform.create_safety_alert(
-                st.session_state.current_experiment_id, parameter, value, threshold, severity
+        # Progress bar
+        st.progress(progress / 100, f"Experiment Progress: {progress:.1f}%")
+    
+    else:
+        st.warning("🟡 No active sensor monitoring")
+    
+    # Safety alerts
+    safety_alerts = sensor_data.get("safety_alerts", [])
+    if safety_alerts:
+        st.subheader("🚨 Active Safety Alerts")
+        for alert in safety_alerts[-3:]:  # Show last 3 alerts
+            severity_icon = {"warning": "🟡", "critical": "🔴"}.get(alert["severity"], "⚪")
+            st.error(f"{severity_icon} **{alert['severity'].upper()}**: {alert['message']}")
+    
+    # Real-time sensor data
+    recent_readings = sensor_data.get("recent_readings", [])
+    if recent_readings:
+        st.subheader("📊 Live Sensor Data")
+        
+        # Convert to DataFrame
+        import pandas as pd
+        df = pd.DataFrame(recent_readings)
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        
+        # Separate by sensor type
+        temp_data = df[df['sensor_type'] == 'temperature']
+        pressure_data = df[df['sensor_type'] == 'pressure']
+        gas_data = df[df['sensor_type'] == 'gas_level']
+        
+        # Temperature chart
+        if not temp_data.empty:
+            st.subheader("🌡️ Temperature Monitoring")
+            
+            fig_temp = go.Figure()
+            
+            for sensor_id in temp_data['sensor_id'].unique():
+                sensor_data_subset = temp_data[temp_data['sensor_id'] == sensor_id]
+                fig_temp.add_trace(go.Scatter(
+                    x=sensor_data_subset['timestamp'],
+                    y=sensor_data_subset['value'],
+                    mode='lines+markers',
+                    name=f"{sensor_id} ({sensor_data_subset['location'].iloc[0]})",
+                    line=dict(width=2),
+                    marker=dict(size=4)
+                ))
+            
+            # Add safety thresholds
+            fig_temp.add_hline(y=90, line_dash="dash", line_color="orange", 
+                             annotation_text="Warning (90°C)")
+            fig_temp.add_hline(y=100, line_dash="dash", line_color="red",
+                             annotation_text="Critical (100°C)")
+            
+            fig_temp.update_layout(
+                title="Real-Time Temperature Monitoring",
+                xaxis_title="Time",
+                yaxis_title="Temperature (°C)",
+                height=400,
+                showlegend=True
             )
             
-            if success:
-                st.warning(f"Safety Alert Created: {parameter} = {value} (threshold: {threshold})")
-            else:
-                st.error(f"Failed to create alert: {result}")
+            st.plotly_chart(fig_temp, use_container_width=True)
+            
+            # Current temperature metrics
+            current_temps = temp_data.groupby('sensor_id')['value'].last()
+            cols = st.columns(len(current_temps))
+            for i, (sensor_id, temp) in enumerate(current_temps.items()):
+                with cols[i]:
+                    delta_color = "normal"
+                    if temp > 100:
+                        delta_color = "inverse"
+                    elif temp > 90:
+                        delta_color = "off"
+                    
+                    st.metric(
+                        f"{sensor_id}",
+                        f"{temp:.1f}°C",
+                        delta=None,
+                        delta_color=delta_color
+                    )
+        
+        # Pressure chart
+        if not pressure_data.empty:
+            st.subheader("📊 Pressure Monitoring")
+            
+            fig_pressure = go.Figure()
+            
+            for sensor_id in pressure_data['sensor_id'].unique():
+                sensor_data_subset = pressure_data[pressure_data['sensor_id'] == sensor_id]
+                fig_pressure.add_trace(go.Scatter(
+                    x=sensor_data_subset['timestamp'],
+                    y=sensor_data_subset['value'],
+                    mode='lines+markers',
+                    name=f"{sensor_id} ({sensor_data_subset['location'].iloc[0]})",
+                    line=dict(width=2),
+                    marker=dict(size=4)
+                ))
+            
+            # Add safety thresholds
+            fig_pressure.add_hline(y=115, line_dash="dash", line_color="orange",
+                                 annotation_text="Warning (115 kPa)")
+            fig_pressure.add_hline(y=125, line_dash="dash", line_color="red",
+                                 annotation_text="Critical (125 kPa)")
+            
+            fig_pressure.update_layout(
+                title="Real-Time Pressure Monitoring",
+                xaxis_title="Time",
+                yaxis_title="Pressure (kPa)",
+                height=400,
+                showlegend=True
+            )
+            
+            st.plotly_chart(fig_pressure, use_container_width=True)
+            
+            # Current pressure metrics
+            current_pressures = pressure_data.groupby('sensor_id')['value'].last()
+            cols = st.columns(len(current_pressures))
+            for i, (sensor_id, pressure) in enumerate(current_pressures.items()):
+                with cols[i]:
+                    delta_color = "normal"
+                    if pressure > 125:
+                        delta_color = "inverse"
+                    elif pressure > 115:
+                        delta_color = "off"
+                    
+                    st.metric(
+                        f"{sensor_id}",
+                        f"{pressure:.2f} kPa",
+                        delta=None,
+                        delta_color=delta_color
+                    )
+        
+        # Gas level monitoring
+        if not gas_data.empty:
+            st.subheader("💨 Gas Level Monitoring")
+            
+            current_gas_levels = gas_data.groupby('sensor_id')['value'].last()
+            cols = st.columns(len(current_gas_levels))
+            for i, (sensor_id, gas_level) in enumerate(current_gas_levels.items()):
+                with cols[i]:
+                    delta_color = "normal"
+                    if gas_level > 5000:
+                        delta_color = "inverse"
+                    elif gas_level > 1000:
+                        delta_color = "off"
+                    
+                    st.metric(
+                        f"{sensor_id}",
+                        f"{gas_level:.0f} ppm",
+                        delta=None,
+                        delta_color=delta_color
+                    )
+        
+        # Data table
+        with st.expander("📋 Recent Sensor Readings", expanded=False):
+            display_df = df.copy()
+            display_df['time'] = display_df['timestamp'].dt.strftime('%H:%M:%S')
+            display_df = display_df[['time', 'sensor_id', 'sensor_type', 'value', 'units', 'location']]
+            display_df = display_df.sort_values('time', ascending=False)
+            st.dataframe(display_df, use_container_width=True, hide_index=True)
+    
+    else:
+        st.info("No sensor data available. Start monitoring to see live data.")
+    
+    # Auto-refresh
+    if st.checkbox("Auto-refresh (every 10 seconds)", value=False):
+        time.sleep(10)
+        st.rerun()
 
 
 def display_ai_assistant():
