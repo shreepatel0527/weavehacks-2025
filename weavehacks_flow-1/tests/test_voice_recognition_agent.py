@@ -68,6 +68,8 @@ class TestSpeechRecognizerAgent:
     @patch('streamlit.info')
     def test_record_audio_success(self, mock_info, mock_wait, mock_rec, agent, mock_audio_data):
         """Test successful audio recording."""
+        # Mock successful audio initialization
+        agent.audio_initialized = True
         mock_rec.return_value = mock_audio_data.reshape(-1, 1)
         
         result = agent.record_audio(duration=1.0)
@@ -75,17 +77,27 @@ class TestSpeechRecognizerAgent:
         assert isinstance(result, np.ndarray)
         assert len(result) == len(mock_audio_data)
         mock_rec.assert_called_once_with(
-            16000, samplerate=16000, channels=1, dtype='float32'
+            16000, samplerate=16000, channels=1, dtype='float32', device=None
         )
         mock_wait.assert_called_once()
+    
+    def test_record_audio_uninitialized(self, agent):
+        """Test audio recording when audio system is not initialized."""
+        # Ensure audio is not initialized (default state in test environment)
+        agent.audio_initialized = False
+        
+        with pytest.raises(RuntimeError, match="Audio system not properly initialized"):
+            agent.record_audio()
     
     @patch('weavehacks_flow.agents.voice_recognition_agent.sd.rec')
     def test_record_audio_device_error(self, mock_rec, agent):
         """Test audio recording with device error."""
         import sounddevice as sd
+        # Mock successful audio initialization
+        agent.audio_initialized = True
         mock_rec.side_effect = sd.PortAudioError("Device not found")
         
-        with pytest.raises(RuntimeError, match="Microphone access failed"):
+        with pytest.raises(RuntimeError, match="Audio Error"):
             agent.record_audio()
     
     @patch('weavehacks_flow.agents.voice_recognition_agent.tempfile.NamedTemporaryFile')
@@ -163,7 +175,7 @@ class TestSpeechRecognizerAgent:
     @patch('weavehacks_flow.agents.voice_recognition_agent.sd.default')
     def test_get_device_info_success(self, mock_default, mock_query, agent):
         """Test successful device info retrieval."""
-        mock_query.return_value = ["device1", "device2"]
+        mock_query.return_value = [{"name": "device1"}, {"name": "device2"}]
         mock_default.device = [0, 1]
         
         info = agent.get_device_info()
@@ -171,6 +183,7 @@ class TestSpeechRecognizerAgent:
         assert "devices" in info
         assert "default_input" in info
         assert "sample_rate" in info
+        assert "audio_initialized" in info
         assert info["sample_rate"] == 16000
     
     @patch('weavehacks_flow.agents.voice_recognition_agent.sd.query_devices')
@@ -210,6 +223,26 @@ class TestSpeechRecognizerAgent:
         for size in sizes:
             agent = SpeechRecognizerAgent(model_size=size)
             assert agent.model_size == size
+    
+    def test_custom_device_id(self):
+        """Test agent creation with custom device ID."""
+        agent = SpeechRecognizerAgent(device_id=1)
+        assert agent.device_id == 1
+    
+    def test_set_audio_device(self, agent):
+        """Test setting audio device."""
+        # This will fail in test environment, but should not crash
+        result = agent.set_audio_device(device_id=0)
+        assert isinstance(result, bool)
+        assert agent.device_id == 0
+    
+    def test_run_audio_diagnostics(self, agent):
+        """Test running audio diagnostics."""
+        diagnosis_report = agent.run_audio_diagnostics()
+        assert isinstance(diagnosis_report, str)
+        assert len(diagnosis_report) > 0
+        # Should contain diagnostic information
+        assert "AUDIO DEVICE DIAGNOSIS" in diagnosis_report or "Audio diagnostics not available" in diagnosis_report
     
     @patch('weavehacks_flow.agents.voice_recognition_agent.tempfile.NamedTemporaryFile')
     @patch('weavehacks_flow.agents.voice_recognition_agent.sf.write')
