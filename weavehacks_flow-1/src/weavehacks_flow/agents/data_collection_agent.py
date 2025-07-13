@@ -1,11 +1,20 @@
+import weave
+
 class DataCollectionAgent:
+    @weave.op()
     def record_data(self, prompt):
         # Simulate data collection based on user input
-        return float(input(f"{prompt}: "))
+        value = float(input(f"{prompt}: "))
+        # Log the data collection to W&B
+        weave.log({'data_collected': {'prompt': prompt, 'value': value}})
+        return value
 
+    @weave.op()
     def clarify_reagent(self):
         # Prompt the user for clarification on reagents
-        return input("Please clarify the reagent information: ")
+        clarification = input("Please clarify the reagent information: ")
+        weave.log({'clarification_requested': clarification})
+        return clarification
 
 class LabControlAgent:
     def turn_on(self, instrument):
