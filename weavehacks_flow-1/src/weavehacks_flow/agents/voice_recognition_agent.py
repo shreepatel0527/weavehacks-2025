@@ -24,6 +24,14 @@ except ImportError:
     # Fallback for when utils module is not available
     AudioDiagnostics = None
 
+def weave_op():
+    """Optional weave decorator that works when weave is not available"""
+    def decorator(func):
+        if weave is not None:
+            return weave.op()(func)
+        return func
+    return decorator
+
 class SpeechRecognizerAgent:
     """High-accuracy speech recognition using OpenAI Whisper."""
     
@@ -47,7 +55,7 @@ class SpeechRecognizerAgent:
         
         # Initialize audio diagnostics
         self._initialize_audio_system()
-    @weave.op()  
+    @weave_op()  
     def load_model(self):
         """Load the Whisper model."""
         if self.model is None:
@@ -59,7 +67,7 @@ class SpeechRecognizerAgent:
                 self.logger.error(f"Failed to load Whisper model: {e}")
                 raise RuntimeError(f"Could not load Whisper model: {e}")
     
-    @weave.op()
+    @weave_op()
     def record_audio(self, duration: float = 5.0) -> np.ndarray:
         """
         Record audio from the microphone.
@@ -98,7 +106,7 @@ class SpeechRecognizerAgent:
             self.logger.error(f"Recording failed: {e}")
             raise RuntimeError(f"Audio recording failed: {e}")
     
-    @weave.op() 
+    @weave_op() 
     def transcribe_audio(self, audio_data: np.ndarray) -> Tuple[bool, str]:
         """
         Transcribe audio data to text using Whisper.
@@ -150,7 +158,7 @@ class SpeechRecognizerAgent:
                 except Exception as cleanup_error:
                     self.logger.warning(f"Failed to cleanup temp file {tmp_path}: {cleanup_error}")
     
-    @weave.op()
+    @weave_op()
     def record_and_transcribe(self, duration: float = 5.0) -> Tuple[bool, str]:
         """
         Record audio and transcribe it in one operation.

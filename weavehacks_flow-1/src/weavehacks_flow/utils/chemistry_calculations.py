@@ -27,18 +27,12 @@ def weave_op():
 
 def safe_wandb_log(data: dict):
     """Safely log to wandb, handling cases where wandb is not initialized"""
+    if wandb is None:
+        return
     try:
-        safe_wandb_log(data)
-    except wandb.errors.UsageError:
-        # wandb not initialized, try to initialize minimally
-        try:
-            wandb.init(project="lab-assistant-calculations", mode="disabled")
-            safe_wandb_log(data)
-        except Exception:
-            # If all else fails, just skip logging
-            pass
+        wandb.log(data)
     except Exception:
-        # Any other wandb error, skip logging
+        # Any wandb error, skip logging
         pass
 
 # Get configuration

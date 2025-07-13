@@ -34,7 +34,18 @@ def listen(previous_method):
 
 # Use compatibility class instead of Flow
 Flow = FlowCompatibility
-import weave
+try:
+    import weave
+except ImportError:
+    weave = None
+
+def weave_op():
+    """Optional weave decorator that works when weave is not available"""
+    def decorator(func):
+        if weave is not None:
+            return weave.op()(func)
+        return func
+    return decorator
 from .agents.data_collection_agent import DataCollectionAgent
 from .agents.lab_control_agent import LabControlAgent
 from .agents.safety_monitoring_agent import EnhancedSafetyMonitoringAgent
@@ -120,7 +131,7 @@ class ExperimentFlow(FlowCompatibility):
     def initialize_experiment(self):
         print("Initializing experiment...")
 
-    @weave.op()
+    @weave_op()
     def update_step(self):
         self.state.step_num += 1
         print(f"Step {self.state.step_num} completed.")
@@ -129,7 +140,7 @@ class ExperimentFlow(FlowCompatibility):
     # need to add a step prompting method 
 
     @listen(initialize_experiment)
-    @weave.op()
+    @weave_op()
     def weigh_gold(self):
         self.state.mass_gold = self.data_agent.record_data(
             "Weigh HAuCl₄·3H₂O (0.1576g) -- record mass", use_voice=True
@@ -138,7 +149,7 @@ class ExperimentFlow(FlowCompatibility):
         self.update_step()
 
     @listen(weigh_gold)
-    @weave.op()
+    @weave_op()
     def measure_nanopure_rt(self):
         self.state.volume_nanopure_rt = self.data_agent.record_data(
             "Measure water (10mL) -- record vol", use_voice=True
@@ -147,7 +158,7 @@ class ExperimentFlow(FlowCompatibility):
         self.update_step()
 
     @listen(measure_nanopure_rt)
-    @weave.op()
+    @weave_op()
     def weigh_toab(self):
         self.state.mass_toab = self.data_agent.record_data(
             "Weigh TOAB (~0.25g) -- record mass", use_voice=True
@@ -156,7 +167,7 @@ class ExperimentFlow(FlowCompatibility):
         self.update_step()
 
     @listen(weigh_toab)
-    @weave.op()
+    @weave_op()
     def measure_toluene(self):
         self.state.volume_toluene = self.data_agent.record_data(
             "Measure toluene (10mL) -- record vol", use_voice=True
@@ -165,7 +176,7 @@ class ExperimentFlow(FlowCompatibility):
         self.update_step()
 
     @listen(measure_toluene)
-    @weave.op()
+    @weave_op()
     def calculate_sulfur_amount(self):
         """Calculate amount of PhCH₂CH₂SH (3 eq. relative to gold)"""
         calc_result = calculate_sulfur_amount(self.state.mass_gold)
@@ -179,7 +190,7 @@ class ExperimentFlow(FlowCompatibility):
         return calc_result['mass_sulfur_g'] 
 
     @listen(calculate_sulfur_amount)
-    @weave.op()
+    @weave_op()
     def weigh_sulfur(self):
         mass_needed = self.calculate_sulfur_amount()
         prompt = f"Weigh PhCH₂CH₂SH (~{mass_needed:.3f}g) -- record mass"
@@ -190,7 +201,7 @@ class ExperimentFlow(FlowCompatibility):
     # DO NOT MODIFY ABOVE THIS !!! 
 
     @listen(weigh_sulfur)
-    @weave.op()
+    @weave_op()
     def initialize_overnight_monitoring(self):
         """Initialize overnight monitoring system with video, safety, and lab control integration"""
         print("\n" + "="*50)
@@ -399,7 +410,7 @@ class ExperimentFlow(FlowCompatibility):
     ## DO NOT MODIFY BELOW THIS !!! 
 
     @listen(initialize_overnight_monitoring)
-    @weave.op()
+    @weave_op()
     def calculate_nabh4_amount(self):
         """Calculate amount of NaBH4 (10 eq. relative to gold)"""
         calc_result = calculate_nabh4_amount(self.state.mass_gold)
@@ -413,7 +424,7 @@ class ExperimentFlow(FlowCompatibility):
         return calc_result['mass_nabh4_g']
 
     @listen(calculate_nabh4_amount)
-    @weave.op()
+    @weave_op()
     def weigh_nabh4(self):
         mass_needed = self.calculate_nabh4_amount()
         prompt = f"Weigh NaBH4 (~{mass_needed:.3f}g) -- record mass"
@@ -422,21 +433,21 @@ class ExperimentFlow(FlowCompatibility):
         self.update_step()
 
     @listen(weigh_nabh4)
-    @weave.op()
+    @weave_op()
     def measure_nanopure_cold(self):
         self.state.volume_nanopure_cold = self.data_agent.record_data("Measure ice-cold Nanopure water (7mL) -- record vol")
         print(f"Cold Nanopure Volume recorded: {self.state.volume_nanopure_cold}mL")
         self.update_step()
     
     @listen(measure_nanopure_cold)
-    @weave.op()
+    @weave_op()
     def weigh_final(self):
         self.state.mass_final = self.data_agent.record_data("Weigh final Au₂₅ nanoparticles -- record mass")
         print(f"Nanoparticle mass recorded: {self.state.mass_final}g")
         self.update_step()
 
     @listen(weigh_final)
-    @weave.op()
+    @weave_op()
     def calculate_percent_yield(self):
         """Calculate percent yield of the experiment based on the initial HAuCl4 content"""
         calc_result = calculate_percent_yield(self.state.mass_gold, self.state.mass_final)
@@ -450,7 +461,7 @@ class ExperimentFlow(FlowCompatibility):
         return calc_result['percent_yield']
 
     @listen(calculate_percent_yield)
-    @weave.op()
+    @weave_op()
     def finalize_experiment(self):
         self.state.exp_status = "complete"
         percent_yield = self.calculate_percent_yield()
@@ -498,14 +509,14 @@ class ExperimentFlow(FlowCompatibility):
     @listen(measure_solvent)
     '''
 
-    @weave.op()
+    @weave_op()
     def control_lab_instruments(self):
         self.lab_agent.turn_on("centrifuge")
         self.lab_agent.turn_on("UV-Vis")
         print("Lab instruments turned on.")
 
     @listen(control_lab_instruments)
-    @weave.op()
+    @weave_op()
     def monitor_safety(self):
         # Get status from safety agent
         status = self.safety_agent.get_status_report()
@@ -517,7 +528,7 @@ class ExperimentFlow(FlowCompatibility):
             # Safety agent will handle notifications automatically
             print("Safety status: Unsafe! Notifications sent.")
 
-@weave.op()
+@weave_op()
 def kickoff():
     experiment_flow = ExperimentFlow()
     experiment_flow.kickoff()

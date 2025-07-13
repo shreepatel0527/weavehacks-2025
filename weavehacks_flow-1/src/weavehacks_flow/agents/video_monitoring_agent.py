@@ -24,6 +24,14 @@ except ImportError:
 from collections import deque
 import logging
 
+def weave_op():
+    """Optional weave decorator that works when weave is not available"""
+    def decorator(func):
+        if weave is not None:
+            return weave.op()(func)
+        return func
+    return decorator
+
 try:
     import cv2
     CV2_AVAILABLE = True
@@ -295,7 +303,7 @@ class VideoMonitoringAgent:
         except Exception:
             return False
         
-    @weave.op()
+    @weave_op()
     def start_monitoring(self, callback=None):
         """Start video monitoring"""
         if not self.cv2_available:
@@ -362,7 +370,7 @@ class VideoMonitoringAgent:
             self.logger.error(f"Failed to start video monitoring: {e}")
             return {"status": "error", "message": str(e)}
     
-    @weave.op()
+    @weave_op()
     def stop_monitoring(self):
         """Stop video monitoring"""
         if not self.is_monitoring:
@@ -444,7 +452,7 @@ class VideoMonitoringAgent:
             except Exception as e:
                 self.logger.error(f"Frame processing error: {e}")
     
-    @weave.op()
+    @weave_op()
     def _process_frame(self, frame: np.ndarray, frame_num: int) -> List[VideoEvent]:
         """Process single frame for events"""
         events = []
@@ -539,7 +547,7 @@ class VideoMonitoringAgent:
                 }
             })
     
-    @weave.op()
+    @weave_op()
     def start_recording(self, filename: Optional[str] = None):
         """Start video recording"""
         if not self.cv2_available:
@@ -586,7 +594,7 @@ class VideoMonitoringAgent:
             self.logger.error(f"Failed to start recording: {e}")
             return {"status": "error", "message": str(e)}
     
-    @weave.op()
+    @weave_op()
     def stop_recording(self):
         """Stop video recording"""
         if not self.is_recording:
@@ -636,7 +644,7 @@ class VideoMonitoringAgent:
             'recording_active': self.is_recording
         }
     
-    @weave.op()
+    @weave_op()
     def _log_statistics(self):
         """Log monitoring statistics"""
         stats = self.get_event_summary()
