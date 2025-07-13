@@ -1,6 +1,6 @@
 import weave
 import wandb
-from agents.voice_recognition_agent import SpeechRecognizerAgent
+from .voice_recognition_agent import SpeechRecognizerAgent
 import re
 import csv
 
