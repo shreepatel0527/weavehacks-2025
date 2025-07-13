@@ -36,7 +36,7 @@ Flow = FlowCompatibility
 import weave
 from .agents.data_collection_agent import DataCollectionAgent
 from .agents.lab_control_agent import LabControlAgent
-from .agents.safety_monitoring_agent import SafetyMonitoringAgent
+from .agents.safety_monitoring_agent import EnhancedSafetyMonitoringAgent
 # from .crews.data_collection_crew.data_collection_crew import DataCollectionCrew
 # from .crews.lab_control_crew.lab_control_crew import LabControlCrew
 # from .crews.safety_monitoring_crew.safety_monitoring_crew import SafetyMonitoringCrew
@@ -78,7 +78,7 @@ class ExperimentFlow(FlowCompatibility):
         super().__init__(ExperimentState)
         self.data_agent = DataCollectionAgent()
         self.lab_agent = LabControlAgent()
-        self.safety_agent = SafetyMonitoringAgent()
+        self.safety_agent = EnhancedSafetyMonitoringAgent()
         self._setup_workflow()
     
     def _setup_workflow(self):
