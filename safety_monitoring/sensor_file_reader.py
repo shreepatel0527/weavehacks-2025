@@ -21,11 +21,14 @@ def process_data(data):
     # Check if temperature exceeds the alarm threshold
     if temp > HIGH_TEMP_THRESHOLD:
         print(f"  -> ALARM! Temperature {temp}°C is above the threshold of {HIGH_TEMP_THRESHOLD}°C!")
-
+        return "unsafe"
+    
     # Check if pressure exceeds the alarm threshold
     if pressure > HIGH_PRESSURE_THRESHOLD:
         print(f"  -> ALARM! Pressure {pressure} kPa is above the threshold of {HIGH_PRESSURE_THRESHOLD} kPa!")
-
+        return "unsafe"
+    
+    return "safe"
 
 def monitor_sensor_file():
     """

@@ -1,0 +1,9 @@
+streamlit>=1.28.0
+openai-whisper>=20230918
+sounddevice>=0.4.6
+soundfile>=0.12.1
+numpy>=1.24.0
+google-generativeai>=0.3.0
+crewai>=0.1.0  # For orchestrating agents
+pandas>=1.3.0  # If you are processing CSV files in `sensor_file_reader.py`
+scipy>=1.7.0   # For any advanced numerical computations
