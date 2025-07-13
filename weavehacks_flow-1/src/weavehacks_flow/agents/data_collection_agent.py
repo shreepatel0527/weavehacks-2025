@@ -1,6 +1,6 @@
 import weave
 import wandb
-from agents.voice_recognition_agent import SpeechRecognizerAgent
+from .voice_recognition_agent import SpeechRecognizerAgent
 import re
 import csv
 
@@ -37,17 +37,38 @@ class DataCollectionAgent:
         """
         if use_voice:
             print(prompt)
-            success, transcribed_text = self.voice_agent.record_and_transcribe(duration=5.0)
-            if success:
-                print(f"Transcribed Data: {transcribed_text}")
-                extracted_value = self._extract_digit(transcribed_text)
-                if experiment_state is not None and state_key is not None:
-                    setattr(experiment_state, state_key, extracted_value)
-                return extracted_value
+            
+            # Check if voice agent is properly initialized
+            if not self.voice_agent.audio_initialized:
+                print("⚠️  Voice recognition not available. Audio system not properly initialized.")
+                print("🔧 To troubleshoot, run: python diagnose_audio.py")
+                print("📝 Falling back to manual input...")
+                use_voice = False
             else:
-                print(f"Error: {transcribed_text}")
-                return None
-        else:
+                try:
+                    success, transcribed_text = self.voice_agent.record_and_transcribe(duration=5.0)
+                    if success:
+                        print(f"Transcribed Data: {transcribed_text}")
+                        extracted_value = self._extract_digit(transcribed_text)
+                        if experiment_state is not None and state_key is not None:
+                            setattr(experiment_state, state_key, extracted_value)
+                        return extracted_value
+                    else:
+                        print(f"❌ Voice Recognition Error: {transcribed_text}")
+                        print("📝 Falling back to manual input...")
+                        use_voice = False
+                except RuntimeError as e:
+                    print(f"❌ Audio System Error: {e}")
+                    if "device -1" in str(e).lower():
+                        print("🔧 Quick fix: Run 'python diagnose_audio.py' for detailed troubleshooting")
+                    print("📝 Falling back to manual input...")
+                    use_voice = False
+                except Exception as e:
+                    print(f"❌ Unexpected voice recognition error: {e}")
+                    print("📝 Falling back to manual input...")
+                    use_voice = False
+        
+        if not use_voice:
             print(prompt)
             recorded_data = input("Enter the data: ")
             extracted_value = self._extract_digit(recorded_data)
