@@ -186,3 +186,119 @@ View Weave data at https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/weav
 2025-07-13 13:27:13,594 - video_monitoring_agent - WARNING - Camera 0 not available
 2025-07-13 13:27:13,657 - video_monitoring_agent - INFO - Recording started: recordings/experiment_20250713_132713.mp4
 2025-07-13 13:27:14,058 - weave.trace.op - INFO - 🍩 https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/r/call/01980578-6712-79cd-84d5-aeaffbab4121
+2025-07-13 13:38:50,130 - weavehacks_flow.agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 13:38:50,336 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:38:50,449 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:38:51,982 - weave.integrations.patcher - ERROR - Error patching - some logs may not be captured: kickoff_async
+Traceback (most recent call last):
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 36, in attempt_patch
+    all_successful = all_successful and patcher.attempt_patch()
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 98, in attempt_patch
+    original_value = getattr(target.base_symbol, target.attr)
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+AttributeError: kickoff_async
+2025-07-13 13:38:51,994 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:38:52,096 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:38:52,355 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/lab-assistant-errors/weave
+2025-07-13 13:38:52,459 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:38:52,559 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:38:52,683 - weave.integrations.patcher - ERROR - Error patching - some logs may not be captured: kickoff_async
+Traceback (most recent call last):
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 36, in attempt_patch
+    all_successful = all_successful and patcher.attempt_patch()
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 98, in attempt_patch
+    original_value = getattr(target.base_symbol, target.attr)
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+AttributeError: kickoff_async
+2025-07-13 13:38:52,684 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:38:52,774 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:38:52,958 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/weave
+2025-07-13 13:39:16,347 - weavehacks_flow.agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 13:39:16,402 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:39:16,509 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:39:17,986 - weave.integrations.patcher - ERROR - Error patching - some logs may not be captured: kickoff_async
+Traceback (most recent call last):
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 36, in attempt_patch
+    all_successful = all_successful and patcher.attempt_patch()
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 98, in attempt_patch
+    original_value = getattr(target.base_symbol, target.attr)
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+AttributeError: kickoff_async
+2025-07-13 13:39:17,998 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:39:18,104 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:39:18,385 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/lab-assistant-errors/weave
+2025-07-13 13:39:18,518 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:39:18,638 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:39:18,760 - weave.integrations.patcher - ERROR - Error patching - some logs may not be captured: kickoff_async
+Traceback (most recent call last):
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 36, in attempt_patch
+    all_successful = all_successful and patcher.attempt_patch()
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 98, in attempt_patch
+    original_value = getattr(target.base_symbol, target.attr)
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+AttributeError: kickoff_async
+2025-07-13 13:39:18,761 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:39:18,874 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:39:19,092 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/weave
+2025-07-13 13:39:19,096 - weavehacks_flow.agents.voice_recognition_agent - WARNING - No default input device found
+2025-07-13 13:39:19,109 - weavehacks_flow.agents.voice_recognition_agent - ERROR - Audio access test failed: Error querying device -1
+2025-07-13 13:39:19,110 - weavehacks_flow.agents.voice_recognition_agent - WARNING - Audio system test failed
+2025-07-13 13:39:19,114 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Initialized 4 experiment configurations
+2025-07-13 13:39:19,114 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Enhanced Safety Monitoring Agent initialized
+2025-07-13 13:39:19,117 - weavehacks_flow.agents.voice_recognition_agent - WARNING - No default input device found
+2025-07-13 13:39:19,117 - weavehacks_flow.agents.voice_recognition_agent - ERROR - Audio access test failed: Error querying device -1
+2025-07-13 13:39:19,121 - weavehacks_flow.agents.voice_recognition_agent - WARNING - Audio system test failed
+2025-07-13 13:39:19,139 - weave.trace.op - INFO - 🍩 https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/r/call/01980583-7937-743c-a446-c6747e43fafd
+2025-07-13 13:39:19,143 - video_monitoring_agent - WARNING - Camera 0 not available
+2025-07-13 13:39:19,224 - video_monitoring_agent - INFO - Recording started: recordings/experiment_20250713_133919.mp4
+2025-07-13 13:40:36,623 - weavehacks_flow.agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 13:40:36,682 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:40:36,795 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:40:38,278 - weave.integrations.patcher - ERROR - Error patching - some logs may not be captured: kickoff_async
+Traceback (most recent call last):
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 36, in attempt_patch
+    all_successful = all_successful and patcher.attempt_patch()
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 98, in attempt_patch
+    original_value = getattr(target.base_symbol, target.attr)
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+AttributeError: kickoff_async
+2025-07-13 13:40:38,289 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:40:38,392 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:40:38,592 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/lab-assistant-errors/weave
+2025-07-13 13:40:38,802 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:40:38,898 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:40:39,008 - weave.integrations.patcher - ERROR - Error patching - some logs may not be captured: kickoff_async
+Traceback (most recent call last):
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 36, in attempt_patch
+    all_successful = all_successful and patcher.attempt_patch()
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/weave/integrations/patcher.py", line 98, in attempt_patch
+    original_value = getattr(target.base_symbol, target.attr)
+  File "/Users/User/Library/Python/3.9/lib/python/site-packages/pydantic/_internal/_model_construction.py", line 271, in __getattr__
+    raise AttributeError(item)
+AttributeError: kickoff_async
+2025-07-13 13:40:39,009 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 13:40:39,111 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 13:40:39,307 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/weave
+2025-07-13 13:40:39,310 - weavehacks_flow.agents.voice_recognition_agent - WARNING - No default input device found
+2025-07-13 13:40:39,310 - weavehacks_flow.agents.voice_recognition_agent - ERROR - Audio access test failed: Error querying device -1
+2025-07-13 13:40:39,324 - weavehacks_flow.agents.voice_recognition_agent - WARNING - Audio system test failed
+2025-07-13 13:40:39,331 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Initialized 4 experiment configurations
+2025-07-13 13:40:39,335 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Enhanced Safety Monitoring Agent initialized
+2025-07-13 13:40:39,338 - weavehacks_flow.agents.voice_recognition_agent - WARNING - No default input device found
+2025-07-13 13:40:39,338 - weavehacks_flow.agents.voice_recognition_agent - ERROR - Audio access test failed: Error querying device -1
+2025-07-13 13:40:39,338 - weavehacks_flow.agents.voice_recognition_agent - WARNING - Audio system test failed
+2025-07-13 13:40:39,349 - video_monitoring_agent - WARNING - Camera 0 not available
+2025-07-13 13:40:39,400 - video_monitoring_agent - INFO - Recording started: recordings/experiment_20250713_134039.mp4
+2025-07-13 13:40:39,400 - weavehacks_flow.agents.safety_monitoring_agent - ERROR - Cannot start monitoring without setting an experiment
+2025-07-13 13:40:40,016 - weave.trace.op - INFO - 🍩 https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/r/call/01980584-b28e-7e51-aac1-5b3dfc1bca93

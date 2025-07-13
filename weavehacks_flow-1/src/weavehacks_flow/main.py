@@ -228,7 +228,7 @@ class ExperimentFlow(FlowCompatibility):
         
         # Start safety monitoring
         print("Activating safety monitoring...")
-        self.safety_agent.monitor_parameters()
+        self.safety_agent.start_monitoring()
         monitoring_status['safety_monitoring'] = True
         print("✓ Safety monitoring activated")
         
@@ -299,13 +299,19 @@ class ExperimentFlow(FlowCompatibility):
         while self.monitoring_active and hasattr(self, 'monitoring_active'):
             try:
                 # Check safety parameters
-                self.safety_agent.monitor_parameters()
+                # Safety monitoring is already running in background
                 
-                if not self.safety_agent.is_safe():
+                # Check if there are any active alerts
+                status = self.safety_agent.get_status_report()
+                if status.get('alerts_active', 0) > 0:
                     self.state.safety_status = "unsafe"
-                    self.safety_agent.notify_scientist()
-                    print("Safety status: Unsafe! Notifying scientist.")
-                    self._trigger_emergency_halt("Safety parameters out of range", "Environmental conditions unsafe")
+                    recent_alerts = self.safety_agent.get_recent_alerts(1)
+                    if recent_alerts:
+                        alert_desc = recent_alerts[0].get('message', 'Unknown alert')
+                    else:
+                        alert_desc = 'Safety alert detected'
+                    print(f"Safety status: Unsafe! {alert_desc}")
+                    self._trigger_emergency_halt("Safety parameters out of range", alert_desc)
                     break
                 
                 # Check for video safety violations
@@ -501,13 +507,15 @@ class ExperimentFlow(FlowCompatibility):
     @listen(control_lab_instruments)
     @weave.op()
     def monitor_safety(self):
-        self.safety_agent.monitor_parameters()
-        if self.safety_agent.is_safe():
+        # Get status from safety agent
+        status = self.safety_agent.get_status_report()
+        is_safe = status.get('alerts_active', 0) == 0
+        if is_safe:
             print("Safety status: Safe")
         else:
             self.state.safety_status = "unsafe"
-            self.safety_agent.notify_scientist()
-            print("Safety status: Unsafe! Notifying scientist.")
+            # Safety agent will handle notifications automatically
+            print("Safety status: Unsafe! Notifications sent.")
 
 @weave.op()
 def kickoff():
