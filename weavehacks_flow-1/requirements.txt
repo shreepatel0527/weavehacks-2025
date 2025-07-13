@@ -23,6 +23,9 @@ plotly>=5.20.0,<6.0.0
 # Testing
 pytest>=8.0.0,<9.0.0
 
+# ArXiv API integration
+feedparser>=6.0.0
+
 # Computer vision (comment out if not needed)
 opencv-python>=4.8.0,<5.0.0
 
