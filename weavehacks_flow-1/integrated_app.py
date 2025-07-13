@@ -91,7 +91,13 @@ class IntegratedLabPlatform:
             if response.status_code == 200:
                 return True, response.json()
             else:
-                return False, f"API Error: {response.status_code}"
+                # Get more details about the error
+                error_detail = ""
+                try:
+                    error_detail = response.json().get('detail', '')
+                except:
+                    error_detail = response.text
+                return False, f"API Error {response.status_code}: {error_detail}"
         except Exception as e:
             return False, f"Connection Error: {str(e)}"
     
@@ -423,6 +429,11 @@ def display_voice_data_entry():
             units = st.selectbox("Units", ["g", "mL"])
         
         if st.form_submit_button("Record Data"):
+            # Check if experiment is selected
+            if not st.session_state.current_experiment_id:
+                st.error("Please create an experiment first in the Dashboard tab.")
+                return
+                
             platform = st.session_state.platform
             data_type = "mass" if units == "g" else "volume"
             
@@ -791,6 +802,8 @@ def display_protocol_steps():
         from step_panel import render_step_panel
         render_step_panel(st.session_state.current_experiment_id)
     except (ImportError, Exception) as e:
+        # Show error details for debugging
+        st.error(f"Error loading step panel: {e}")
         # Fallback simple step panel
         render_simple_step_panel()
 
@@ -808,6 +821,8 @@ def display_data_panel():
         from data_panel import render_experiment_data_panel
         render_experiment_data_panel(st.session_state.current_experiment_id)
     except (ImportError, Exception) as e:
+        # Show error details for debugging
+        st.error(f"Error loading data panel: {e}")
         # Fallback simple data panel
         render_simple_data_panel()
 
