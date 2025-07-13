@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from weavehacks_flow.agents.data_collection_agent import DataCollectionAgent
 from weavehacks_flow.agents.lab_control_agent import LabControlAgent
-from weavehacks_flow.agents.safety_monitoring_agent import SafetyMonitoringAgent
+from weavehacks_flow.agents.safety_monitoring_agent import EnhancedSafetyMonitoringAgent as SafetyMonitoringAgent
 from weavehacks_flow.utils.chemistry_calculations import (
     calculate_sulfur_amount,
     calculate_nabh4_amount,
