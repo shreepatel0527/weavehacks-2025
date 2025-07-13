@@ -18,3 +18,24 @@
  (subsequent messages of this type will be suppressed)
 2025-07-13 11:38:29,359 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Initialized 4 experiment configurations
 2025-07-13 11:38:29,359 - weavehacks_flow.agents.safety_monitoring_agent - INFO - Enhanced Safety Monitoring Agent initialized
+2025-07-13 12:30:18,861 - agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 12:30:50,466 - agents.safety_monitoring_agent - WARNING - Prototype-1 components not available, using local implementations
+2025-07-13 12:30:50,555 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 12:30:50,709 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 12:30:53,868 - httpx - INFO - HTTP Request: GET https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json "HTTP/1.1 200 OK"
+2025-07-13 12:30:59,607 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 12:30:59,853 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 12:31:00,219 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/lab-assistant-errors/weave
+2025-07-13 12:31:00,732 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 12:31:00,965 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 12:31:01,240 - gql.transport.requests - INFO - >>> {"query": "query DefaultEntity {\n  viewer {\n    username\n    defaultEntity {\n      name\n    }\n  }\n}"}
+2025-07-13 12:31:01,361 - gql.transport.requests - INFO - <<< {"data":{"viewer":{"username":"shreepatel527","defaultEntity":{"name":"shreepatel0527"}}}}
+2025-07-13 12:31:01,784 - weave.trace.init_message - INFO - Logged in as Weights & Biases user: shreepatel527.
+View Weave data at https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/weave
+2025-07-13 12:31:01,814 - agents.voice_recognition_agent - WARNING - No default input device found
+2025-07-13 12:31:01,815 - agents.voice_recognition_agent - ERROR - Audio access test failed: Error querying device -1
+2025-07-13 12:31:01,815 - agents.voice_recognition_agent - WARNING - Audio system test failed
+2025-07-13 12:31:01,816 - agents.safety_monitoring_agent - INFO - Initialized 4 experiment configurations
+2025-07-13 12:31:01,816 - agents.safety_monitoring_agent - INFO - Enhanced Safety Monitoring Agent initialized
+2025-07-13 12:31:02,857 - weave.trace.op - INFO - 🍩 https://wandb.ai/shreepatel0527/weavehacks-lab-assistant/r/call/01980544-f434-7e92-a26e-4cc9997191cc
