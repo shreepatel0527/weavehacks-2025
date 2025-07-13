@@ -3,7 +3,21 @@ The public repo for WeaveHacks 2025, focused on agentic workflows for research s
 
 ## Vision 
 
-Scientists are tackling some of the world’s most pressing problems; however, their industry remains highly manual, slowing down these brilliant minds in achieving the breakthroughs we need. We are introducing agentic workflows to the research space, with a focus on wet lab scientists, to reduce the burden on these brilliant minds.
+Scientists are tackling some of the world's most pressing problems; however, their industry remains highly manual, slowing down these brilliant minds in achieving the breakthroughs we need. We are introducing agentic workflows to the research space, with a focus on wet lab scientists, to reduce the burden on these brilliant minds.
+
+## 🎉 NEW: Video Monitoring Integration
+
+**Latest Update**: Successfully integrated advanced video monitoring system for real-time experiment analysis!
+
+### ✨ New Features Added:
+- 📹 **Real-time Video Monitoring**: Automated color change and motion detection
+- 🔍 **Smart Event Detection**: Color transitions, stirring validation, safety monitoring
+- 📊 **Live Dashboard**: Real-time event display with confidence scoring
+- 🎥 **Experiment Recording**: Automatic video recording with event annotations
+- ⚠️ **Safety Integration**: Video-based safety violation detection
+- 🤖 **CrewAI Integration**: Seamless workflow integration with existing agents
+
+[📖 **View Integration Documentation**](VIDEO_MONITORING_INTEGRATION.md)
 
 ## Use Case
 Nanoparticles are a hot topic right now; we are exploring applications in energy, cosmetics, robotic technologies, and cancer treatments. Nanoparticles are unique because they allow us a gateway to understand the connection between classical and quantum states of being. As a nanoparticle researcher, I am working on building a nanoparticle that I believe will be a great carrier for targeted cancer therapy. 
